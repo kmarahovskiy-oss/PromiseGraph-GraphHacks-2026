@@ -75,7 +75,7 @@ try:
         expect(page.locator('#status')).to_contain_text('SOURCE CONFLICT')
         expect(page.locator('#previewNote')).to_contain_text('Existing reviewer decisions are preserved')
         page.locator('#history').click()
-        expect(page.locator('#details')).to_contain_text('Synthetic',timeout=20000)
+        expect(page.locator('#details')).to_contain_text('engineering drawing',timeout=20000)
         page.locator('#variant').select_option('deep-r3')
         page.locator('#mattress').fill('34')
         page.locator('#topper').fill('4')
