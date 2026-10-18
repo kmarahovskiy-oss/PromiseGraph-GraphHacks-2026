@@ -1,6 +1,7 @@
 'use strict';
 const $=id=>document.getElementById(id);
 let report=null;
+let reportInputs=null;
 let analysisSequence=0;
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const payload=()=>({id:$('variant').value,mattress:$('mattress').value,topper:$('topper').value,unit:'cm'});
@@ -15,8 +16,9 @@ async function startup(){try{
  const variants=await api('/api/variants');$('variant').innerHTML=variants.map(v=>`<option value="${esc(v.id)}">${esc(v.name)} · ${esc(v.region)}</option>`).join('');
  if(variants.some(v=>v.id==='standard-r3'))$('variant').value='standard-r3';
  await check();
+ await scanPortfolio();
  }catch(e){$('connection').textContent='FalkorDB unavailable';$('headline').textContent='Graph connection required';$('explanation').textContent=e.message;$('check').disabled=true;status(null,'Database offline','fail');}}
-async function check(){const sequence=++analysisSequence;try{$('check').disabled=true;status(null,'Analyzing…','neutral');const next=await api('/api/analyze',{method:'POST',body:JSON.stringify(payload())});if(sequence===analysisSequence){report=next;render(next)}}catch(e){if(sequence===analysisSequence){report=null;$('explanation').textContent=e.message;$('claims').textContent='No current analysis';$('sources').textContent='No current evidence';status(null,'Error','fail')}}finally{if(sequence===analysisSequence)$('check').disabled=false}}
+async function check(){const sequence=++analysisSequence;const inputs=payload();report=null;reportInputs=null;try{$('check').disabled=true;status(null,'Analyzing…','neutral');const next=await api('/api/analyze',{method:'POST',body:JSON.stringify(inputs)});if(sequence===analysisSequence){report=next;reportInputs=inputs;render(next)}}catch(e){if(sequence===analysisSequence){report=null;reportInputs=null;$('explanation').textContent=e.message;$('claims').textContent='No current analysis';$('sources').textContent='No current evidence';$('review').classList.add('hidden');status(null,'Error','fail')}}finally{if(sequence===analysisSequence)$('check').disabled=false}}
 function render(r){let state=r.state;
  status(null,({REVIEW_REQUIRED:'SOURCE CONFLICT',BLOCKED:'STOP · SOURCE INVALID',PASS:'DOCUMENTED FIT',FAIL:'UNSUPPORTED CLAIM'})[state],({REVIEW_REQUIRED:'review',BLOCKED:'fail',PASS:'pass',FAIL:'fail'})[state]);
  $('headline').textContent=({REVIEW_REQUIRED:'Two sources. Two answers. One decision to make.',BLOCKED:'Evidence cannot be trusted yet.',PASS:'The selected documentation supports this fit.',FAIL:'This promise would mislead the buyer.'})[state];
@@ -50,24 +52,36 @@ async function reconsider(){
  $('review').scrollIntoView({behavior:'smooth',block:'center'});
 }
 async function replay(){
- ++analysisSequence;$('check').disabled=false;
- try{$('replay').disabled=true;
-  report=await api('/api/replay-conflict',{method:'POST',body:JSON.stringify(payload())});
-  render(report);$('previewNote').textContent=report.preview_note;
- }catch(e){$('previewNote').textContent=e.message}finally{$('replay').disabled=false}
+ const sequence=++analysisSequence,inputs=payload();report=null;reportInputs=null;$('review').classList.add('hidden');
+ try{$('replay').disabled=true;const value=await api('/api/replay-conflict',{method:'POST',body:JSON.stringify(inputs)});
+  if(sequence===analysisSequence){report=value;reportInputs=inputs;render(value);$('previewNote').textContent=value.preview_note;}
+ }catch(e){if(sequence===analysisSequence)$('previewNote').textContent='Replay unavailable: '+e.message}
+ finally{$('replay').disabled=false}
 }
-async function preview(){++analysisSequence;$('check').disabled=false;try{
- $('preview').disabled=true;const data={...payload(),title:$('newtitle').value,text:$('newtext').value};
- report=await api('/api/preview-source',{method:'POST',body:JSON.stringify(data)});
- render(report);$('previewNote').textContent=report.preview_note;
- }catch(e){$('previewNote').textContent=e.message}finally{$('preview').disabled=false}}
-async function approve(){if(!report)return;try{if(!$('confirm').checked){alert('Please confirm you reviewed the evidence.');return}
+async function preview(){
+ const sequence=++analysisSequence,inputs=payload();report=null;reportInputs=null;$('review').classList.add('hidden');
+ try{$('preview').disabled=true;const data={...inputs,title:$('newtitle').value,text:$('newtext').value};
+ const value=await api('/api/preview-source',{method:'POST',body:JSON.stringify(data)});
+ if(sequence===analysisSequence){report=value;reportInputs=inputs;render(value);$('previewNote').textContent=value.preview_note;}
+ }catch(e){if(sequence===analysisSequence)$('previewNote').textContent='Source preview unavailable: '+e.message}
+ finally{$('preview').disabled=false}}
+async function approve(){if(!report)return;try{if(report.preview){alert('A read-only replay or preview cannot be approved. Run a fresh graph analysis first.');return}if(JSON.stringify(payload())!==JSON.stringify(reportInputs)){alert('Inputs changed. Run the analysis again before deciding.');return}if(!$('confirm').checked){alert('Please confirm you reviewed the evidence.');return}
  const data={...payload(),evidence_id:$('authority').value,reason:$('reason').value,fingerprint:report.fingerprint,confirmed:true};
  $('approve').disabled=true;const next=await api('/api/decide',{method:'POST',body:JSON.stringify(data)});render(next.result);
  $('details').textContent='Decision saved to FalkorDB: '+next.decision_id;$('details').classList.remove('hidden');
  }catch(e){alert(e.message)}finally{$('approve').disabled=false}}
-async function detail(name,path){if(!payload().id)return;try{const data=await api(path);$('details').textContent=name+'\n'+JSON.stringify(data,null,2);$('details').classList.remove('hidden')}catch(e){alert(e.message)}}
-async function exportDraft(){if(!report)return;try{const data=await api('/api/export',{method:'POST',body:JSON.stringify(payload())});const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='promisegraph-review-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000)}catch(e){alert(e.message)}}
+async function detail(name,path){if(!payload().id)return;const sequence=analysisSequence;try{const data=await api(path);if(sequence===analysisSequence){$('details').textContent=name+'\n'+JSON.stringify(data,null,2);$('details').classList.remove('hidden')}}catch(e){if(sequence===analysisSequence)alert(e.message)}}
+async function exportDraft(){if(!report||!reportInputs){alert('Run an analysis before exporting.');return}try{
+ // Export must represent the CURRENT on-screen result, including a read-only
+ // replay or preview, rather than silently querying a different graph decision.
+ const selected=report,params={...reportInputs};
+ const result={format:'promisegraph-visible-report-v3',synthetic:true,automatically_published:false,
+  read_only:!!selected.preview,replay:!!selected.replay,output:'review-only',inputs:params,
+  result:selected,notice:selected.preview?'Read-only simulation; no source decision was changed or saved.':'Graph-backed analysis; no automatic publication.'};
+ const blob=new Blob([JSON.stringify(result,null,2)],{type:'application/json'});
+ const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;
+ a.download=selected.preview?'promisegraph-readonly-preview.json':'promisegraph-review-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000)
+ }catch(e){alert(e.message)}}
 $('check').addEventListener('click',()=>{$('previewNote').textContent='';check()});$('reconsider').addEventListener('click',reconsider);$('scanPortfolio').addEventListener('click',scanPortfolio);$('replay').addEventListener('click',replay);$('preview').addEventListener('click',preview);$('approve').addEventListener('click',approve);$('paths').addEventListener('click',()=>detail('GRAPH PATHS','/api/paths/'+encodeURIComponent(payload().id)));$('history').addEventListener('click',()=>detail('REVIEW HISTORY','/api/audit/'+encodeURIComponent(payload().id)));$('export').addEventListener('click',exportDraft);
 $('variant').addEventListener('change',()=>{$('previewNote').textContent='';check()});$('mattress').addEventListener('change',check);$('topper').addEventListener('change',check);
 startup();

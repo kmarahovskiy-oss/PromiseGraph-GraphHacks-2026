@@ -26,3 +26,5 @@
 #portfolioPanel .sectionline{gap:18px;align-items:center}
 #scanPortfolio{width:auto;min-width:180px;flex:0 0 auto;margin:0;justify-content:center}
 @media(max-width:650px){#portfolioPanel .sectionline{flex-direction:column;align-items:stretch}#scanPortfolio{width:100%}}
+
+.story-link{color:var(--mint);text-decoration:none;font-size:13px;border-bottom:1px solid #517567}.story-link:hover,.story-link:focus-visible{color:#e1ffe8;border-color:#e1ffe8}.topright{flex-wrap:wrap}

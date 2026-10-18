@@ -120,6 +120,8 @@ def create_app(initial_store=None):
         try:
             source=db().bundle(r.id)
             report=analyze({**source,'authority':None},r.mattress,r.topper,r.unit)
+            if len(report['source_limits_cm']) <= 1:
+                raise HTTPException(422,'This variant has no conflicting source documents to replay')
         except KeyError as exc:raise HTTPException(404,str(exc)) from exc
         except ValueError as exc:raise HTTPException(422,str(exc)) from exc
         report['preview']=True
@@ -153,6 +155,8 @@ def create_app(initial_store=None):
         return {'format':'promisegraph-draft-v2','synthetic':True,'automatically_published':False,
             'output':'review-only','result':value,'graph_paths':db().paths(r.id),'history':db().audit(r.id)}
     app.mount('/static',StaticFiles(directory=BASE/'promisegraph/static'),name='static')
+    @app.get('/story')
+    def story(): return FileResponse(BASE/'promisegraph/static/story.html')
     @app.get('/')
     def index(): return FileResponse(BASE/'promisegraph/static/index.html')
     return app

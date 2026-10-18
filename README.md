@@ -25,7 +25,7 @@ A merchandiser wants to publish a statement without spending an afternoon reconc
 1. Open the live service, select **Scan all variants** to get a graph-backed risk queue across all sample SKUs and revisions.
 2. Select the conflicted SKU and review two alternative source decisions and their exact downstream effects.
 3. Even if a previous visitor approved a source, **Replay original source conflict** safely reconstructs the original alternatives in a read-only view without deleting decisions.
-4. Choose a source based on the documentary evidence, record a reason, and inspect saved audit history. The **Review / revise source decision** control opens a deliberate new review even after a prior visitor selected a source; earlier decisions remain in the graph. Every generated correction remains an editorial draft.
+4. Choose a source based on the documentary evidence, record a reason, and inspect saved audit history. Every generated correction remains an editorial draft.
 5. Switch to a different SKU and confirm it is unaffected. No customer data or private company infrastructure is used.
 
 The portfolio scan is automated graph-tool orchestration, **not** a claim that a generative LLM is running. Shared demo decisions are visible to all visitors during the free-service process lifetime; users should never enter private documents or make real-business decisions with the demo.
@@ -82,6 +82,10 @@ Review **engineering drawing, 12 in = 30.48 cm**, record a reason and explicitly
 
 For the live integration verification, ensure `GET /api/health` says `source: real_graph`, test the review action end-to-end, and restart the service to check memory persistence. Do not use fake test doubles for a contest demo.
 
+## Product story and decision value
+
+[**Explore the human-centred product story**](https://promisegraph-graphhacks-2026.onrender.com/story) — the problem, three workflows, the traceable FalkorDB decision, live workbench and real narrated video. The story is hosted by the same Render service, not a separate test site. All examples are synthetic and no financial benefits are invented.
+
 ## Screens & controls
 
 - Single-screen interactive workbench: precise variant + dimensions, real graph status, source witness cards, impact radius, suggested drafts, reviewer approval, graph paths, persistent decisions.
@@ -94,14 +98,7 @@ For the live integration verification, ensure `GET /api/health` says `source: re
 - The agent uses a *deterministic tool-directed decision loop* and a strict extractor for one documented source-statement format, not a generative LLM runtime. It makes decisions from connected graph state, discloses ambiguity, drafts safe edits and keeps graph memory. This limits claims about model inference.
 - It evaluates *documented compatibility*, not experimentally measured product fit. There are no real claims of measured returns prevented, time saved or merchant adoption.
 - Single local reviewer, one Uvicorn worker. No user auth, hardened concurrency, multitenant support, real storefront integration, invoice edits or unattended publication.
-- A separate GitHub Actions run verified the real FalkorDB integration and recorded a Playwright browser demo with English narration against the real database. [Download the public demo video](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4). Render Free is a convenient preview but uses ephemeral local storage; it cannot establish cross-restart persistence.
-
-## Live demo and independently inspectable evidence
-
-- [Full narrated demo video (MP4)](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4) — 86-second browser recording against real FalkorDB.
-- [Video recording workflow](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/live-demo.yml) — reproducible Playwright test and recorded artifact.
-- [Real graph and API verification](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/verify.yml) — database-backed integration tests.
-- [Project story / competition blog](docs/ARTICLE_FINAL.md) — explains the user's problem, one-click portfolio scan, evidence provenance, safety gates and tested limitations.
+- The demo video and **real database integration test are not verified in this runtime**; do not state otherwise. Follow `docs/VIDEO_SCRIPT.md` and `docs/RELEASE_GATE.md` on a compatible machine before submitting.
 
 ## Competition and disclosure
 
@@ -117,8 +114,8 @@ Only public or synthetic data are used; no paid tools or external service creden
 RUN_GRAPH_TESTS=1 python -m pytest tests/test_live_graph.py -v
 ```
 
-The smoke test is run in CI with genuine FalkorDB and an isolated graph name; it exercises actual Cypher query paths, records a reviewer decision, checks separate variant isolation and creates a fresh DB connection to verify persisted memory. If it fails, the release gate remains blocked.
+The smoke test uses an isolated FalkorDB graph name; it exercises actual Cypher query paths, records a reviewer decision, checks separate variant isolation and creates a fresh DB connection to verify persisted memory. If it fails, the release gate remains blocked.
 
-### Optional one-service preview deployment — ephemeral storage
+### Optional one-service preview deployment — experimental, not verified
 
-The application can alternatively start the real embedded FalkorDBLite (`FALKORDB_MODE=embedded`, `pip install -r requirements-embedded.txt`) on a Linux host that permits Unix sockets. `render.yaml` documents the one-service Render Free configuration; the deployed service has been launched and a public-readonly HTTP smoke check is included in GitHub Actions. **Do not confuse FalkorDBLite with an in-memory fake:** it runs a genuine FalkorDB graph engine. On Render Free the filesystem can disappear when the service sleeps or redeploys, so reviewer decisions are **not durable across that restart**; the standard local Docker build with a persistent volume is the reliable competition evidence for memory. The existing Render Free preview is available at https://promisegraph-graphhacks-2026.onrender.com; its UI and uptime should be checked independently.
+The application can alternatively start the real embedded FalkorDBLite (`FALKORDB_MODE=embedded`, `pip install -r requirements-embedded.txt`) on a Linux host that permits Unix sockets. `render.yaml` is an *untested* Render Free draft manifest prepared for an isolated hackathon deployment after owner approval. **Do not confuse FalkorDBLite with an in-memory fake:** it runs a genuine FalkorDB graph engine. On Render Free the filesystem can disappear when the service sleeps or redeploys, so reviewer decisions are **not durable across that restart**; the standard local Docker build with a persistent volume is the reliable competition evidence for memory. No services were created by this project package.

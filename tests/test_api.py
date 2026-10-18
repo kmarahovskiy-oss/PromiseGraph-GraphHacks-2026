@@ -61,3 +61,27 @@ def test_portfolio_autotriage_without_graph_writes():
     assert result['requires_review']==1
     assert result['items'][0]['possible_impact']==2
     assert store.data['authority'] is None
+
+
+def test_replay_safe_variant_is_not_invented():
+    class OneSource(FauxStore):
+        def bundle(self,id):
+            b=super().bundle(id)
+            b['evidence']=b['evidence'][:1]
+            return b
+    client=TestClient(create_app(OneSource()))
+    response=client.post('/api/replay-conflict',json={'id':'standard-r3'})
+    assert response.status_code==422
+    assert 'no conflicting source' in response.json()['detail']
+
+
+def test_story_and_workspace_links_available():
+    client=TestClient(create_app(FauxStore()))
+    story=client.get('/story')
+    assert story.status_code==200
+    assert 'One bad claim.' in story.text
+    assert 'deterministic graph-directed agent' in story.text
+    assert 'real-browser' not in story.text
+    front=client.get('/')
+    assert front.status_code==200
+    assert 'href="/story"' in front.text

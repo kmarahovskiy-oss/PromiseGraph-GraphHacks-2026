@@ -7,20 +7,16 @@
 **Tagline:** Stop bad product promises before they become returns.
 
 **Description:**
-PromiseGraph is a graph-powered product-claim verification agent. It scans all linked product variants without user setup, finds contradictions in supplier documents for an *exact* SKU, revision and market; checks dimensions with exact unit arithmetic; traverses the graph to every dependent customer-facing claim; and prepares evidence-backed correction drafts. When sources disagree it deliberately stops and asks a reviewer to choose an authoritative document, saving the reason in FalkorDB for the next session. A read-only replay lets judges explore the original contradiction without erasing prior review history. No unsupported assumption and no automatic publication. Demo data are synthetic.
+PromiseGraph is a graph-powered product-claim verification agent. It finds contradictions in supplier documents for an *exact* SKU, revision and market; checks dimensions with exact unit arithmetic; traverses the graph to every dependent customer-facing claim; and prepares evidence-backed correction drafts. When sources disagree it deliberately stops and asks a reviewer to choose an authoritative document, saving the reason in FalkorDB for the next session. No unsupported assumption and no automatic publication. Demo data are synthetic.
 
 **What makes the graph indispensable:**
 A Variant connects to Attribute, Evidence, Documents and Promises through Cypher relationship traversals. The blast-radius search and persisted reviewer Decision are unavailable if FalkorDB is removed. The system fails closed, without an in-memory fixture fallback.
 
 **Tech:** Python 3.12+, FastAPI, FalkorDB, Cypher, vanilla JavaScript, Docker Compose. AI coding assistance disclosed. Decision engine is deterministic and does not claim LLM runtime.
 
-**Repo:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026
+**Repo:** [ADD PUBLISHED EVENT-WINDOW REPO URL]
 
-**Demo video:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4
-
-**Blog:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/blob/main/docs/ARTICLE_FINAL.md
-
-**Live demo:** https://promisegraph-graphhacks-2026.onrender.com (ephemeral free-tier backend; CI video uses persistent real Docker FalkorDB for its single run)
+**Demo video:** [ADD REAL WORKING-DEMO VIDEO URL]
 
 **Run:** Docker Compose + pip install -r requirements.txt + uvicorn. See README.
 
