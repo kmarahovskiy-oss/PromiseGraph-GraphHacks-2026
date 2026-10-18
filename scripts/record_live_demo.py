@@ -30,6 +30,13 @@ try:
         page=context.new_page()
         page.goto(URL,wait_until='domcontentloaded')
         expect(page.locator('#status')).to_contain_text('SOURCE CONFLICT',timeout=20000)
+        # Same live graph and browser: verify the new automatic portfolio workflow.
+        expect(page.locator('#portfolioSummary')).to_contain_text('3 variants checked',timeout=20000)
+        expect(page.locator('button[data-variant]')).to_have_count(3,timeout=20000)
+        story=page.request.get(URL+'/story',timeout=20000)
+        assert story.status_code==200 and 'One bad claim.' in story.text()
+        article=page.request.get(URL+'/article',timeout=20000)
+        assert article.status_code==200 and 'FalkorDB' in article.text()
         page.evaluate("""() => {
             const x=document.createElement('div');x.id='filmCaption';
             Object.assign(x.style,{position:'fixed',bottom:'20px',left:'20px',zIndex:'100000',
@@ -63,6 +70,12 @@ try:
         scene('Graph paths connect exact variant, claim and publication',7)
         page.locator('#history').click()
         scene('Decision history comes from the graph, not preset text',7)
+        # Read-only replay must not erase the stored reviewer decision.
+        page.locator('#replay').click()
+        expect(page.locator('#status')).to_contain_text('SOURCE CONFLICT')
+        expect(page.locator('#previewNote')).to_contain_text('Existing reviewer decisions are preserved')
+        page.locator('#history').click()
+        expect(page.locator('#details')).to_contain_text('Synthetic',timeout=20000)
         page.locator('#variant').select_option('deep-r3')
         page.locator('#mattress').fill('34')
         page.locator('#topper').fill('4')
