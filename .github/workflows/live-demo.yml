@@ -1,0 +1,37 @@
+name: Record a genuine FalkorDB browser demo
+on:
+  push:
+    paths:
+      - scripts/record_live_demo.py
+      - .github/workflows/live-demo.yml
+  workflow_dispatch:
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    services:
+      falkordb:
+        image: falkordb/falkordb:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt playwright
+      - run: python -m playwright install --with-deps chromium
+      - run: sudo apt-get update && sudo apt-get install -y espeak-ng ffmpeg
+      - name: Run and record REAL FalkorDB application
+        run: python scripts/record_live_demo.py
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: PromiseGraph-real-FalkorDB-narrated-demo
+          path: artifacts/real-graph-demo/
+          retention-days: 7
