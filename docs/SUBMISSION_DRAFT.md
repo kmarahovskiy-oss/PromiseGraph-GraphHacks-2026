@@ -14,9 +14,13 @@ A Variant connects to Attribute, Evidence, Documents and Promises through Cypher
 
 **Tech:** Python 3.12+, FastAPI, FalkorDB, Cypher, vanilla JavaScript, Docker Compose. AI coding assistance disclosed. Decision engine is deterministic and does not claim LLM runtime.
 
-**Repo:** [ADD PUBLISHED EVENT-WINDOW REPO URL]
+**Repo:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026
 
-**Demo video:** [ADD REAL WORKING-DEMO VIDEO URL]
+**Demo video:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4
+
+**Blog:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/blob/main/docs/ARTICLE_FINAL.md
+
+**Live demo:** https://promisegraph-graphhacks-2026.onrender.com (ephemeral free-tier backend; CI video uses persistent real Docker FalkorDB for its single run)
 
 **Run:** Docker Compose + pip install -r requirements.txt + uvicorn. See README.
 

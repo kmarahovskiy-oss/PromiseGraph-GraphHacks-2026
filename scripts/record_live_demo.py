@@ -74,20 +74,40 @@ try:
         context.close()
         browser.close()
         shutil.move(movie.path(),str(OUT/'real-browser.webm'))
-    speech=('One wrong specification can spread to multiple product pages and quotations. '
-      'PromiseGraph uses real FalkorDB relationships to find conflicting evidence for the exact product variant. '
-      'The graph shows the downstream consequences of each possible decision without guessing which source is correct. '
-      'A new source excerpt can also be checked safely without writing to the shared database. '
-      'When documents conflict, a human must choose the authoritative source and record the reason. '
-      'That decision is saved in FalkorDB. Two affected customer-facing claims receive draft corrections, '
-      'while an unrelated product variant remains unchanged. Nothing is published automatically. '
-      'Every example here is synthetic. Built using disclosed AI coding assistance.')
-    subprocess.run(['espeak-ng','-v','en-gb','-s','155','-w',str(OUT/'voice.wav'),speech],check=True)
-    subprocess.run(['ffmpeg','-y','-i',str(OUT/'real-browser.webm'),'-i',str(OUT/'voice.wav'),
-                    '-filter_complex','[1:a]apad[a]','-map','0:v','-map','[a]',
-                    '-c:v','libx264','-preset','veryfast','-crf','25','-pix_fmt','yuv420p',
-                    '-c:a','aac','-b:a','128k','-shortest',
-                    str(OUT/'PromiseGraph_Real_Demo_Narrated.mp4')],check=True)
+    # Narration follows the demonstrated browser scenes instead of finishing early.
+    # All statements are tied to interactions that the Playwright test verifies.
+    lines=[
+        (0,"A product description can become an expensive promise. PromiseGraph checks the evidence before publication."),
+        (8,"Two specifications disagree for one exact product variant. The graph compares how each choice would affect dependent claims."),
+        (16,"We can paste a new supplier statement and preview the impact without changing our shared graph."),
+        (24,"Conflicting sources are not silently resolved. The agent pauses and requires a human decision."),
+        (31,"The engineering drawing is selected, with a recorded reason. The decision is saved in real FalkorDB."),
+        (39,"Two promises need editorial corrections. The supported FAQ remains untouched and nothing is automatically published."),
+        (48,"Here are real graph paths linking the product specification to customer-facing documents."),
+        (55,"And this is the stored decision history. The next request can retrieve that reasoning."),
+        (62,"A different SKU still passes. Similar-looking product variants are never mixed together."),
+        (70,"PromiseGraph: traceable evidence, safe corrections, fewer manual checks. Synthetic data, built with disclosed AI assistance."),
+    ]
+    voice_files=[]
+    for i,(offset,spoken) in enumerate(lines):
+        voice_path=OUT/f'voice-scene-{i:02d}.wav'
+        subprocess.run(['espeak-ng','-v','en-gb','-s','170','-w',str(voice_path),spoken],check=True)
+        voice_files.append((offset,voice_path))
+    audio_cmd=['ffmpeg','-y']
+    for _,source in voice_files:
+        audio_cmd+=['-i',str(source)]
+    delayed=[]
+    for i,(offset,_) in enumerate(voice_files):
+        delayed.append(f'[{i}:a]adelay={offset*1000}:all=1[a{i}]')
+    mix=''.join(f'[a{i}]' for i in range(len(voice_files)))
+    filters=';'.join(delayed+[f'{mix}amix=inputs={len(voice_files)}:duration=longest:dropout_transition=0,apad[out]'])
+    voice_path=OUT/'voice-timed.wav'
+    audio_cmd+=['-filter_complex',filters,'-map','[out]','-t','85.52',str(voice_path)]
+    subprocess.run(audio_cmd,check=True)
+    subprocess.run(['ffmpeg','-y','-i',str(OUT/'real-browser.webm'),'-i',str(voice_path),
+                    '-map','0:v','-map','1:a','-c:v','libx264','-preset','veryfast',
+                    '-crf','25','-pix_fmt','yuv420p','-c:a','aac','-b:a','128k',
+                    '-shortest',str(OUT/'PromiseGraph_Real_Demo_Narrated.mp4')],check=True)
     (OUT/'run-evidence.json').write_text(json.dumps(health,indent=2))
     print('REAL FALKORDB VERIFIED; NARRATED VIDEO CREATED')
 finally:

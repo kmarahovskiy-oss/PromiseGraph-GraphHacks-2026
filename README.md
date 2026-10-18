@@ -84,7 +84,14 @@ For the live integration verification, ensure `GET /api/health` says `source: re
 - The agent uses a *deterministic tool-directed decision loop* and a strict extractor for one documented source-statement format, not a generative LLM runtime. It makes decisions from connected graph state, discloses ambiguity, drafts safe edits and keeps graph memory. This limits claims about model inference.
 - It evaluates *documented compatibility*, not experimentally measured product fit. There are no real claims of measured returns prevented, time saved or merchant adoption.
 - Single local reviewer, one Uvicorn worker. No user auth, hardened concurrency, multitenant support, real storefront integration, invoice edits or unattended publication.
-- The demo video and **real database integration test are not verified in this runtime**; do not state otherwise. Follow `docs/VIDEO_SCRIPT.md` and `docs/RELEASE_GATE.md` on a compatible machine before submitting.
+- A separate GitHub Actions run verified the real FalkorDB integration and recorded a Playwright browser demo with English narration against the real database. [Download the public demo video](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4). Render Free is a convenient preview but uses ephemeral local storage; it cannot establish cross-restart persistence.
+
+## Live demo and independently inspectable evidence
+
+- [Full narrated demo video (MP4)](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4) — 86-second browser recording against real FalkorDB.
+- [Video recording workflow](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/live-demo.yml) — reproducible Playwright test and recorded artifact.
+- [Real graph and API verification](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/verify.yml) — database-backed integration tests.
+- [Project story / competition blog](docs/ARTICLE_FINAL.md).
 
 ## Competition and disclosure
 
@@ -100,8 +107,8 @@ Only public or synthetic data are used; no paid tools or external service creden
 RUN_GRAPH_TESTS=1 python -m pytest tests/test_live_graph.py -v
 ```
 
-The smoke test uses an isolated FalkorDB graph name; it exercises actual Cypher query paths, records a reviewer decision, checks separate variant isolation and creates a fresh DB connection to verify persisted memory. If it fails, the release gate remains blocked.
+The smoke test is run in CI with genuine FalkorDB and an isolated graph name; it exercises actual Cypher query paths, records a reviewer decision, checks separate variant isolation and creates a fresh DB connection to verify persisted memory. If it fails, the release gate remains blocked.
 
-### Optional one-service preview deployment — experimental, not verified
+### Optional one-service preview deployment — ephemeral storage
 
-The application can alternatively start the real embedded FalkorDBLite (`FALKORDB_MODE=embedded`, `pip install -r requirements-embedded.txt`) on a Linux host that permits Unix sockets. `render.yaml` is an *untested* Render Free draft manifest prepared for an isolated hackathon deployment after owner approval. **Do not confuse FalkorDBLite with an in-memory fake:** it runs a genuine FalkorDB graph engine. On Render Free the filesystem can disappear when the service sleeps or redeploys, so reviewer decisions are **not durable across that restart**; the standard local Docker build with a persistent volume is the reliable competition evidence for memory. No services were created by this project package.
+The application can alternatively start the real embedded FalkorDBLite (`FALKORDB_MODE=embedded`, `pip install -r requirements-embedded.txt`) on a Linux host that permits Unix sockets. `render.yaml` is an *untested* Render Free draft manifest prepared for an isolated hackathon deployment after owner approval. **Do not confuse FalkorDBLite with an in-memory fake:** it runs a genuine FalkorDB graph engine. On Render Free the filesystem can disappear when the service sleeps or redeploys, so reviewer decisions are **not durable across that restart**; the standard local Docker build with a persistent volume is the reliable competition evidence for memory. The separately hosted Render Free preview is available at https://promisegraph-graphhacks-2026.onrender.com; its UI and uptime should be checked independently.

@@ -21,7 +21,7 @@ Review `promisegraph/queries.py` to understand each actual Cypher traversal. The
 - Select **Deep R3**: unaffected. Refresh and check audit history.
 
 ## What was and was not verified
-Local domain/API-contract tests use test doubles; they do not validate actual graph execution. A real FalkorDB integration test and genuine video are mandatory before submitting. On free Render services, an embedded graph may lose its filesystem after restart; do not claim persistent cross-restart memory.
+Local domain/API-contract tests use test doubles; they do not validate actual graph execution. Real FalkorDB integration tests and a genuine narrated browser recording completed successfully in GitHub Actions. The participant still needs to watch the video, inspect the design, and independently understand and approve the submission. On free Render services, an embedded graph may lose its filesystem after restart; do not claim persistent cross-restart memory.
 
 ## Required participant tasks
 1. Read and understand the graph model, queries and agent design.

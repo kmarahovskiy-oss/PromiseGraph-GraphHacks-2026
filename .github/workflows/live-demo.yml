@@ -6,6 +6,9 @@ on:
       - .github/workflows/live-demo.yml
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   record:
     runs-on: ubuntu-latest
@@ -35,3 +38,15 @@ jobs:
           name: PromiseGraph-real-FalkorDB-narrated-demo
           path: artifacts/real-graph-demo/
           retention-days: 7
+
+      - name: Publish public demo video as GitHub Release asset
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FILE="artifacts/real-graph-demo/PromiseGraph_Real_Demo_Narrated.mp4"
+          if gh release view graphhacks-demo-2026 >/dev/null 2>&1; then
+            gh release upload graphhacks-demo-2026 "$FILE" --clobber
+          else
+            gh release create graphhacks-demo-2026 "$FILE" --target "$GITHUB_SHA" --title "PromiseGraph — real FalkorDB narrated demo" --notes "An authentic narrated 86-second browser demonstration, recorded by Playwright against a real FalkorDB graph with synthetic data. Not a simulation; original build verified by GitHub Actions."
+          fi
