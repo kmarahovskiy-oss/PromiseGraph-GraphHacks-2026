@@ -57,3 +57,20 @@ jobs:
           assert 'scanPortfolio' in ui and 'replay' in ui
           print('Live Render OK: FalkorDB graph, portfolio triage and accessible UI')
           PY
+
+
+      - name: Verify published product story and competition blog
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://promisegraph-graphhacks-2026.onrender.com"
+          curl --fail --silent --show-error --max-time 30 "$BASE/story" -o /tmp/promisegraph-story.html
+          curl --fail --silent --show-error --max-time 30 "$BASE/article" -o /tmp/promisegraph-article.html
+          python - <<'PY'
+          from pathlib import Path
+          story=Path('/tmp/promisegraph-story.html').read_text()
+          article=Path('/tmp/promisegraph-article.html').read_text()
+          assert 'PromiseGraph' in story and 'FalkorDB' in story and 'github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026' in story
+          assert 'One Wrong Measurement, Two Broken Promises' in article and 'FalkorDB' in article
+          print('Public story and published blog available over HTTPS')
+          PY
