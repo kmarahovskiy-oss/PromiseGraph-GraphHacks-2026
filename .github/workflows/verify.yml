@@ -33,3 +33,27 @@ jobs:
         run: python -m pytest tests -q
       - name: Check JavaScript syntax
         run: node --check promisegraph/static/app.js
+
+      - name: Check published Render URL (not a second staging environment)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://promisegraph-graphhacks-2026.onrender.com"
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl --fail --silent --show-error --max-time 25 "$BASE/api/health" -o /tmp/promisegraph-health.json; then break; fi
+            echo "Render Free warming up: retry $attempt" >&2
+            sleep 8
+          done
+          curl --fail --silent --show-error --max-time 25 "$BASE/api/portfolio" -o /tmp/promisegraph-portfolio.json
+          curl --fail --silent --show-error --max-time 25 "$BASE/" -o /tmp/promisegraph-ui.html
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          health=json.loads(Path('/tmp/promisegraph-health.json').read_text())
+          portfolio=json.loads(Path('/tmp/promisegraph-portfolio.json').read_text())
+          ui=Path('/tmp/promisegraph-ui.html').read_text()
+          assert health['source']=='real_graph' and health['nodes']>0 and health['edges']>0, health
+          assert portfolio['source']=='real_falkordb' and portfolio['variants_scanned']==3,portfolio
+          assert 'scanPortfolio' in ui and 'replay' in ui
+          print('Live Render OK: FalkorDB graph, portfolio triage and accessible UI')
+          PY
