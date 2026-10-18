@@ -59,3 +59,11 @@ def test_real_graph_portfolio_scan_and_replay_stay_readonly():
     assert len(g.audit('standard-r3'))==1
     fresh=client.get('/api/portfolio').json()
     assert fresh['drafts_ready']==1 and fresh['requires_review']==0
+    # A second justified decision is appended, not used to erase earlier history.
+    current=g.bundle('standard-r3')
+    next_id=g.approve('standard-r3','e-standard-supplier',
+        'Updated reviewer chose supplier evidence after source review',fingerprint(current))
+    assert next_id and next_id!=decision
+    assert g.bundle('standard-r3')['authority']=='e-standard-supplier'
+    assert len(g.audit('standard-r3'))==2
+
