@@ -101,7 +101,7 @@ For the live integration verification, ensure `GET /api/health` says `source: re
 - [Full narrated demo video (MP4)](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4) — 86-second browser recording against real FalkorDB.
 - [Video recording workflow](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/live-demo.yml) — reproducible Playwright test and recorded artifact.
 - [Real graph and API verification](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/verify.yml) — database-backed integration tests.
-- [Project story / competition blog](docs/ARTICLE_FINAL.md).
+- [Project story / competition blog](docs/ARTICLE_FINAL.md) — explains the user's problem, one-click portfolio scan, evidence provenance, safety gates and tested limitations.
 
 ## Competition and disclosure
 
@@ -121,4 +121,4 @@ The smoke test is run in CI with genuine FalkorDB and an isolated graph name; it
 
 ### Optional one-service preview deployment — ephemeral storage
 
-The application can alternatively start the real embedded FalkorDBLite (`FALKORDB_MODE=embedded`, `pip install -r requirements-embedded.txt`) on a Linux host that permits Unix sockets. `render.yaml` is an *untested* Render Free draft manifest prepared for an isolated hackathon deployment after owner approval. **Do not confuse FalkorDBLite with an in-memory fake:** it runs a genuine FalkorDB graph engine. On Render Free the filesystem can disappear when the service sleeps or redeploys, so reviewer decisions are **not durable across that restart**; the standard local Docker build with a persistent volume is the reliable competition evidence for memory. The separately hosted Render Free preview is available at https://promisegraph-graphhacks-2026.onrender.com; its UI and uptime should be checked independently.
+The application can alternatively start the real embedded FalkorDBLite (`FALKORDB_MODE=embedded`, `pip install -r requirements-embedded.txt`) on a Linux host that permits Unix sockets. `render.yaml` documents the one-service Render Free configuration; the deployed service has been launched and a public-readonly HTTP smoke check is included in GitHub Actions. **Do not confuse FalkorDBLite with an in-memory fake:** it runs a genuine FalkorDB graph engine. On Render Free the filesystem can disappear when the service sleeps or redeploys, so reviewer decisions are **not durable across that restart**; the standard local Docker build with a persistent volume is the reliable competition evidence for memory. The existing Render Free preview is available at https://promisegraph-graphhacks-2026.onrender.com; its UI and uptime should be checked independently.

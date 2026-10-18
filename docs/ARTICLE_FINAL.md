@@ -1,4 +1,4 @@
-# One Wrong Measurement, Three Wrong Promises
+# One Wrong Measurement, Two Broken Promises
 *How we built PromiseGraph, an evidence-first decision agent using FalkorDB — Graph Hacks 2026*
 
 Picture a shopper choosing a mattress-and-topper combination for a particular bed. The product page says it fits. A sales quotation repeats the same claim. A support FAQ seems to agree. Then a technical drawing reveals a different maximum height.
@@ -6,6 +6,14 @@ Picture a shopper choosing a mattress-and-topper combination for a particular be
 An ordinary search engine can find both documents. It cannot reliably answer the difficult question: **which exact product variation does each document describe, and how many customer promises depend on it?**
 
 That is the pain PromiseGraph addresses: the time spent reconciling fragmented documents, and the risk of issuing a confident but unsupported answer.
+
+## One button to surface the queue
+
+Before opening a single product, PromiseGraph can now perform a **read-only graph-wide triage**. One click scans every example product variant, follows its graph evidence and identifies where a reviewer must step in, where correction drafts need attention, and where no change is needed.
+
+That distinction matters because the employee does not have to know **which** SKU is wrong before starting. They can start with the queue, choose a flagged variant and inspect the proof. The tool is small by design: three deliberately different graph contexts — a conflicted live revision, a supported Deep variant, and an older revision that must not contaminate the current one. These are synthetic examples, not an invented claim of real-world coverage.
+
+A public demo presents a second challenge: one visitor may have already saved the reviewer choice. **Replay original source conflict** reconstructs both earlier possibilities in a strictly read-only comparison, preserving the decision and audit history instead of clearing the shared graph. This keeps the demonstration understandable for the next visitor.
 
 ## The demo in one minute
 
@@ -23,7 +31,7 @@ No website is silently rewritten, and a documentary compatibility check is never
 
 ## Why FalkorDB is essential
 
-The graph's nodes and edges encode meaning, not just presentation:
+The graph's nodes and edges encode meaning, not just presentation. The model is deliberately visible to reviewers:
 
 ```text
 Model -HAS_VARIANT-> Variant -HAS_SPEC-> Attribute
@@ -56,7 +64,7 @@ This is **not** a general-purpose LLM parser, and we do not advertise it as one.
 
 ## What we verified
 
-The project includes unit and API tests as well as a GitHub Actions integration job that runs the real FalkorDB container and verifies Cypher queries, variant isolation, reviewer decision storage and retrieval through a second client.
+The project includes unit and API tests, a live deployment smoke check for graph health, and a GitHub Actions integration job that runs the real FalkorDB container and verifies Cypher queries, variant isolation, reviewer decision storage and retrieval through a second client.
 
 A separate Playwright workflow launches the application with real FalkorDB, interacts with the browser, and produces a narrated demo video. These are reproducible, rather than static design mock-ups.
 

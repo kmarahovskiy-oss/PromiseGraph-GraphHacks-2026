@@ -7,7 +7,7 @@
 **Tagline:** Stop bad product promises before they become returns.
 
 **Description:**
-PromiseGraph is a graph-powered product-claim verification agent. It finds contradictions in supplier documents for an *exact* SKU, revision and market; checks dimensions with exact unit arithmetic; traverses the graph to every dependent customer-facing claim; and prepares evidence-backed correction drafts. When sources disagree it deliberately stops and asks a reviewer to choose an authoritative document, saving the reason in FalkorDB for the next session. No unsupported assumption and no automatic publication. Demo data are synthetic.
+PromiseGraph is a graph-powered product-claim verification agent. It scans all linked product variants without user setup, finds contradictions in supplier documents for an *exact* SKU, revision and market; checks dimensions with exact unit arithmetic; traverses the graph to every dependent customer-facing claim; and prepares evidence-backed correction drafts. When sources disagree it deliberately stops and asks a reviewer to choose an authoritative document, saving the reason in FalkorDB for the next session. A read-only replay lets judges explore the original contradiction without erasing prior review history. No unsupported assumption and no automatic publication. Demo data are synthetic.
 
 **What makes the graph indispensable:**
 A Variant connects to Attribute, Evidence, Documents and Promises through Cypher relationship traversals. The blast-radius search and persisted reviewer Decision are unavailable if FalkorDB is removed. The system fails closed, without an in-memory fixture fallback.
