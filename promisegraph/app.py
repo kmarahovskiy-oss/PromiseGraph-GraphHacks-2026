@@ -73,6 +73,60 @@ def create_app(initial_store=None):
                           'detail':'All linked claims supported by selected evidence'})
         value['agent_trace']=trace
         return value
+    @app.get('/api/portfolio')
+    def portfolio():
+        """Autonomous read-only triage of every real graph-backed SKU/revision.
+
+        A conflict blocks downstream action until a reviewer resolves it.
+        This uses real graph queries for each variant, not fixture calculations.
+        """
+        graph=db()
+        rows=[]
+        for variant in graph.contexts():
+            report=analyze(graph.bundle(variant['id']))
+            if report['needs_source_review']:
+                action='REVIEW_SOURCES'
+                priority=1 if report['state']=='BLOCKED' else 2
+            elif report['impact_count']:
+                action='REVIEW_CORRECTION_DRAFTS'
+                priority=3
+            else:
+                action='NO_CHANGE_REQUIRED'
+                priority=4
+            rows.append({
+                'id':variant['id'],'name':variant['name'],
+                'sku':variant['sku'],'revision':variant['revision'],
+                'state':report['state'],'action':action,'priority':priority,
+                'affected':report['impact_count'],
+                'dependent_claims':len(report['affected']),
+                'evidence_sources':len(report['evidence']),
+                'possible_impact':max((candidate['affected_count'] for candidate in report['alternatives']),default=report['impact_count']),
+                'reason':report['reason'],
+            })
+        rows.sort(key=lambda row:(row['priority'],-row['possible_impact'],row['id']))
+        return {'synthetic':True,'readonly':True,'source':'real_falkordb',
+                'variants_scanned':len(rows),
+                'requires_review':sum(row['action']=='REVIEW_SOURCES' for row in rows),
+                'drafts_ready':sum(row['action']=='REVIEW_CORRECTION_DRAFTS' for row in rows),
+                'safe_variants':sum(row['action']=='NO_CHANGE_REQUIRED' for row in rows),
+                'items':rows}
+
+    @app.post('/api/replay-conflict')
+    def replay_conflict(r:MeasureRequest):
+        """Read-only original contradiction, independent of prior public demo approvals.
+
+        Does not mutate the graph, remove audit history or overwrite authority.
+        """
+        try:
+            source=db().bundle(r.id)
+            report=analyze({**source,'authority':None},r.mattress,r.topper,r.unit)
+        except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+        except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+        report['preview']=True
+        report['replay']=True
+        report['preview_note']='Read-only replay of conflicting evidence. Existing reviewer decisions are preserved.'
+        return report
+
     @app.post('/api/preview-source')
     def preview(r:SourcePreviewRequest):
         try:

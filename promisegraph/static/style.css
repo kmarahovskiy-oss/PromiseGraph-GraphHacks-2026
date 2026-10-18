@@ -12,3 +12,12 @@
 .preview-button { margin-top:11px; width:100%;text-align:center;display:block; }
 .controls input[type=text] {outline:none;min-width:0;width:100%;border-radius:9px;padding:11px;color:var(--text);background:var(--panel2);border:1px solid #2b4c4f}
 #previewNote {margin:10px 0 0;font-size:11px;}
+
+/* Compact graph portfolio triage: keep cards keyboard-accessible and scannable. */
+.portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+.portfolio-item{background:rgba(255,255,255,.06);color:inherit;text-align:left;border:1px solid #bfd8d2;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px;cursor:pointer;min-height:140px}
+.portfolio-item:hover{border-color:#70d6bb;background:rgba(112,214,187,.12)}
+.portfolio-item:focus-visible{outline:3px solid #70d6bb;outline-offset:2px}
+.portfolio-item small{line-height:1.45;color:inherit;opacity:.85}
+#replay{width:100%;margin-top:9px}
+@media(max-width:600px){.portfolio-grid{grid-template-columns:1fr}}
