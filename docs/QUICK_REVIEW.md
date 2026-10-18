@@ -29,3 +29,7 @@ Local domain/API-contract tests use test doubles; they do not validate actual gr
 3. Decide whether the evidence-based constraints and non-generative agent behavior are correctly represented.
 4. Review the AI coding assistant disclosure and source provenance.
 5. Approve the final public submission separately after reviewing the video.
+
+## Participant confirmation
+
+On October 18, 2026, the participant explicitly confirmed completing a technical review. This is a participant statement, not proof of independent expert verification or of submission to WeMakeDevs.

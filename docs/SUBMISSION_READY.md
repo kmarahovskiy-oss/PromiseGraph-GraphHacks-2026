@@ -1,6 +1,6 @@
 # Graph Hacks 2026 — final entry copy
 
-**Status:** Prepared for participant review. This page is NOT proof that the submission form was sent.
+**Status:** Public deliverables prepared and participant technical review confirmed on October 18, 2026. The WeMakeDevs entry form remains unconfirmed; this document is not a submission receipt.
 
 ## Project name
 PromiseGraph — Before You Promise
@@ -42,14 +42,9 @@ Cypher traverses those edges to find precise evidence, affected customer promise
 - **Graph and test results:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/verify.yml
 - **Video/real browser test:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/live-demo.yml
 
-## Participant-only field — review before submission
-Complete truthfully in your own words:
-- What user problem you chose and why.
-- Which app decisions you reviewed or influenced.
-- Whether you can explain the graph model, Cypher traversals and decision gate.
-- Whether you reviewed the running demo and AI coding disclosure.
+## Participant review and contribution — factual statement
 
-Do not claim that the participant wrote or independently validated code if they did not. Do not submit blindly generated work contrary to the competition rules.
+On October 18, the participant confirmed technical review of the project. The participant directed the project toward reducing manual reconciliation work, avoiding unsupported customer promises, and improving the user experience, test reliability, graph dependence, scenario replay and presentation. They reviewed the narrated demo voice and requested the improved Google TTS edition. Implementation used extensive ChatGPT assistance, which is disclosed. This is a statement of the participant's reported review and directions, not a claim that they personally wrote every line of source code.
 
 ## Human final gate
-Open the application, watch the narrated video, understand the key flows, and submit using the registered WeMakeDevs account **before 18 October 2026, 21:29 Kyiv time**. This document is preparation, not an actual submission receipt.
+Confirm the form's final content, then submit using the registered WeMakeDevs account **before 18 October 2026, 21:29 Kyiv time**. This document is preparation, not an actual submission receipt.
