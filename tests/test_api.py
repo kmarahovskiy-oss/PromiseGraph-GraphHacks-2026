@@ -92,3 +92,18 @@ def test_public_article_contains_disclosure_and_real_graph_story():
     assert r.status_code==200
     assert 'FalkorDB' in r.text and 'synthetic' in r.text
     assert 'ChatGPT coding assistance' in r.text
+
+
+def test_cannot_record_decision_on_tampered_customer_claim():
+    store=FauxStore()
+    store.data['promises'][0]['required_cm']='28'
+    client=TestClient(create_app(store))
+    analysis=client.post('/api/analyze',json={'id':'standard-r3'}).json()
+    assert analysis['state']=='BLOCKED'
+    assert analysis['rejected_claims']
+    response=client.post('/api/decide',json={'id':'standard-r3',
+        'evidence_id':'e-standard-drawing',
+        'reason':'Drawing reviewed; but claim is invalid',
+        'fingerprint':analysis['fingerprint'],'confirmed':True})
+    assert response.status_code==422
+    assert store.data['authority'] is None

@@ -45,6 +45,28 @@ def verify_evidence(item, ctx):
     return True
 
 
+CLAIM_CM = re.compile(r'([0-9]+(?:\.[0-9]+)?)\s*cm\b', re.IGNORECASE)
+
+def verify_promise(item):
+    """Reject cached claim numbers that disagree with the published claim text.
+
+    The limited synthetic demonstration recognises one explicit cm measurement
+    or the documented mattress PLUS topper phrase. Anything else fails closed.
+    """
+    body = item.get('text')
+    if not isinstance(body,str) or not body.strip():
+        raise ValueError('Claim text is empty or invalid')
+    terms=list(CLAIM_CM.finditer(body))
+    if len(terms)==1:
+        documented=measure(terms[0].group(1),'cm')
+    elif len(terms)==2 and 'plus' in body[terms[0].end():terms[1].start()].lower():
+        documented=measure(terms[0].group(1),'cm')+measure(terms[1].group(1),'cm')
+    else:
+        raise ValueError('Cannot verify a single promised height from claim text')
+    if documented != measure(item.get('required_cm'),'cm'):
+        raise ValueError('Cached claim height differs from the customer-facing text')
+    return documented
+
 def fingerprint(bundle):
     snapshot = {k: bundle[k] for k in ('context', 'evidence', 'promises', 'authority')}
     return sha256(json.dumps(snapshot, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
@@ -61,11 +83,17 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
             verified.append(e)
         except (ValueError, TypeError, KeyError) as exc:
             rejected.append({'id':e.get('id'), 'reason':str(exc)})
+    accepted_promises, rejected_claims = {}, []
+    for p in bundle['promises']:
+        try:
+            accepted_promises[p['id']] = verify_promise(p)
+        except (ValueError, TypeError, KeyError) as exc:
+            rejected_claims.append({'id':p.get('id'),'reason':str(exc)})
     values = sorted({measure(e['normalized_cm'], 'cm') for e in verified})
     chosen = next((e for e in verified if e['id'] == bundle['authority']), None)
-    blocked = bool(rejected or (bundle['authority'] and not chosen))
+    blocked = bool(rejected or rejected_claims or (bundle['authority'] and not chosen))
     if blocked or not values:
-        state, limit, reason = 'BLOCKED', None, 'Missing, altered or invalid evidence. No automatic approval.'
+        state, limit, reason = 'BLOCKED', None, 'Invalid, altered or missing evidence / customer claim. No automatic approval.'
     elif len(values) > 1 and not chosen:
         state, limit, reason = 'REVIEW_REQUIRED', None, 'Conflicting source limits: a person must choose and justify the authoritative document.'
     else:
@@ -75,11 +103,11 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
     # Counterfactuals are review aids, not decisions. Every candidate comes from
     # a verified graph-backed evidence node; no source is silently preferred.
     alternatives = []
-    if not rejected and len(values) > 1 and not chosen:
+    if not rejected and not rejected_claims and len(values) > 1 and not chosen:
         for e in verified:
             candidate_limit = measure(e['normalized_cm'], 'cm')
             unsupported = [p for p in bundle['promises']
-                           if measure(p['required_cm'], 'cm') > candidate_limit]
+                           if accepted_promises[p['id']] > candidate_limit]
             alternatives.append({
                 'evidence_id': e['id'], 'title': e['title'],
                 'limit_cm': fmt(candidate_limit),
@@ -91,7 +119,13 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
     changes = []
     for p in bundle['promises']:
         # Traceable, variant-scoped drafts; no speculative output if source truth is missing.
-        height = measure(p['required_cm'], 'cm')
+        if p['id'] not in accepted_promises:
+            changes.append({'promise_id':p['id'],'document_id':p['document_id'],
+                            'title':p['title'],'current':p['text'],'height_cm':None,
+                            'risk':'unknown','action':'REPAIR_UNTRUSTED_CLAIM',
+                            'suggestion':None})
+            continue
+        height = accepted_promises[p['id']]
         risk = 'unknown' if limit is None else ('wrong_promise' if height > limit else 'okay')
         changes.append({'promise_id':p['id'], 'document_id':p['document_id'], 'title':p['title'],
                         'current':p['text'], 'height_cm':fmt(height), 'risk':risk,
@@ -102,12 +136,13 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
     return {'context':bundle['context'], 'state':state, 'reason':reason, 'required_cm':fmt(required),
             'limit_cm':fmt(limit) if limit is not None else None,
             'source_limits_cm':[fmt(v) for v in values], 'authority_id':bundle['authority'],
-            'evidence':verified, 'rejected_evidence':rejected, 'alternatives':alternatives,
+            'evidence':verified, 'rejected_evidence':rejected, 'rejected_claims':rejected_claims, 'alternatives':alternatives,
             'fingerprint':fingerprint(bundle), 'affected':changes,
             'impact_count':sum(c['risk']=='wrong_promise' for c in changes),
             'needs_source_review':state in ('REVIEW_REQUIRED','BLOCKED'),
             'source_disagreement':len(values)>1,
             'note':'Synthetic data; documentary support is not a physical guarantee. All edits are drafts requiring approval.'}
+
 
 def preview_source(bundle, title, body, mattress='30', topper='4', unit='cm'):
     """Review new user-provided synthetic excerpt against *graph-fetched* facts.

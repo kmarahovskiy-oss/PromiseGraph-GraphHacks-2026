@@ -140,7 +140,7 @@ def create_app(initial_store=None):
         if not r.confirmed: raise HTTPException(422,'Explicit human confirmation is required')
         if len(r.reason.strip())<12: raise HTTPException(422,'Please record an explanatory reason')
         current=result(r)
-        if current['rejected_evidence']:raise HTTPException(422,'Invalid sources must be repaired first')
+        if current['rejected_evidence'] or current.get('rejected_claims'):raise HTTPException(422,'Invalid source evidence or customer claims must be repaired first')
         try:
             decision=db().approve(r.id,r.evidence_id,r.reason.strip(),r.fingerprint)
         except ValueError as exc:raise HTTPException(409,str(exc)) from exc

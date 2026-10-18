@@ -55,6 +55,7 @@ def test_exact_unit_edge():
     assert analyze(b,'30.48','0')['state']=='PASS'
     assert analyze(b,'30.49','0')['state']=='FAIL'
 
+
 def test_counterfactuals_show_impact_without_choosing_truth():
     b=bundle(0)
     r=analyze(b)
@@ -73,6 +74,7 @@ def test_no_counterfactual_when_evidence_invalid_or_resolved():
     b=bundle(0);b['authority']='e-standard-drawing'
     assert analyze(b)['alternatives']==[]
 
+
 def test_preview_new_source_stays_unsaved():
     b=bundle(0);n=len(b['evidence'])
     r=preview_source(b,'Updated document','New revision. Maximum total mattress-and-topper height: 32 cm.')
@@ -90,3 +92,24 @@ def test_preview_does_not_inherit_existing_authority():
     r=preview_source(b,'New document','Source limit. Maximum total mattress-and-topper height: 32 cm.')
     assert r['authority_id'] is None and r['state']=='REVIEW_REQUIRED'
     assert b['authority']=='e-standard-drawing'
+
+
+def test_customer_claim_text_and_cached_height_must_agree():
+    b=bundle(0)
+    b['promises'][0]['required_cm']='28'
+    r=analyze(b)
+    assert r['state']=='BLOCKED'
+    assert r['rejected_claims'][0]['id']=='p-store'
+    assert r['impact_count']==0
+    assert all(x['suggestion'] is None for x in r['affected'])
+
+def test_unknown_customer_text_fails_closed():
+    b=bundle(0)
+    b['promises'][1]['text']='Guaranteed fit, trust us'
+    r=analyze(b)
+    assert r['state']=='BLOCKED' and r['rejected_claims']
+
+def test_revision_marker_does_not_alter_height_parsing():
+    b=bundle(2)
+    r=analyze(b)
+    assert r['state']=='PASS' and r['rejected_claims']==[]
