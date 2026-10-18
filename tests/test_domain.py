@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,copy
 import pytest
-from promisegraph.domain import measure,verify_evidence,analyze,fingerprint
+from promisegraph.domain import measure,verify_evidence,analyze,fingerprint,preview_source
 ROOT=Path(__file__).resolve().parents[1]
 DATA=json.loads((ROOT/'data/demo.json').read_text())
 
@@ -72,3 +72,21 @@ def test_no_counterfactual_when_evidence_invalid_or_resolved():
     assert analyze(b)['alternatives']==[]
     b=bundle(0);b['authority']='e-standard-drawing'
     assert analyze(b)['alternatives']==[]
+
+def test_preview_new_source_stays_unsaved():
+    b=bundle(0);n=len(b['evidence'])
+    r=preview_source(b,'Updated document','New revision. Maximum total mattress-and-topper height: 32 cm.')
+    assert r['preview'] is True and r['state']=='REVIEW_REQUIRED'
+    assert r['preview_source_id'].startswith('preview-')
+    assert len(r['evidence'])==3 and len(b['evidence'])==n
+    assert r['alternatives'] and b['authority'] is None
+
+def test_preview_unsupported_text_is_rejected():
+    with pytest.raises(ValueError):
+        preview_source(bundle(0),'Note','Lorem ipsum with no structured measurement at all.')
+
+def test_preview_does_not_inherit_existing_authority():
+    b=bundle(0);b['authority']='e-standard-drawing'
+    r=preview_source(b,'New document','Source limit. Maximum total mattress-and-topper height: 32 cm.')
+    assert r['authority_id'] is None and r['state']=='REVIEW_REQUIRED'
+    assert b['authority']=='e-standard-drawing'

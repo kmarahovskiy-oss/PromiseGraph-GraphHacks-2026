@@ -6,6 +6,7 @@ import re
 
 UNITS = {'cm': Decimal('1'), 'mm': Decimal('0.1'), 'in': Decimal('2.54')}
 CONTEXT_KEYS = ('model', 'sku', 'revision', 'region')
+EXCERPT_QUOTE = re.compile(r'Maximum total mattress-and-topper height: ([0-9]+(?:\.[0-9]+)?) (cm|mm|in)\.')
 QUOTE = re.compile(r'^Maximum total mattress-and-topper height: ([0-9]+(?:\.[0-9]+)?) (cm|mm|in)\.$')
 
 
@@ -107,3 +108,30 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
             'needs_source_review':state in ('REVIEW_REQUIRED','BLOCKED'),
             'source_disagreement':len(values)>1,
             'note':'Synthetic data; documentary support is not a physical guarantee. All edits are drafts requiring approval.'}
+
+def preview_source(bundle, title, body, mattress='30', topper='4', unit='cm'):
+    """Review new user-provided synthetic excerpt against *graph-fetched* facts.
+
+    The preview is not written to the shared public demonstration graph.
+    Only exact supported statements are parsed; no inferred facts or LLM claims.
+    """
+    match = EXCERPT_QUOTE.search(body)
+    if match is None:
+        raise ValueError('No supported source statement found. Use: Maximum total mattress-and-topper height: 12 in.')
+    value, source_unit = match.group(1), match.group(2)
+    import hashlib
+    key = hashlib.sha256((title + '\0' + body).encode()).hexdigest()[:16]
+    entry = {
+        'id':'preview-'+key,'document_id':'preview-doc-'+key,
+        'title':title,'text':body,'uri':'synthetic://user-preview',
+        'value':value,'unit':source_unit,
+        'normalized_cm':fmt(measure(value,source_unit)),
+        'quote':match.group(0),'start':match.start(),'end':match.end(),
+        **bundle['context'],
+    }
+    copy={**bundle, 'authority':None, 'evidence':[*bundle['evidence'],entry]}
+    report=analyze(copy,mattress,topper,unit)
+    report['preview']=True
+    report['preview_source_id']=entry['id']
+    report['preview_note']='Read-only what-if comparison. The new text is NOT stored or approved in FalkorDB.'
+    return report

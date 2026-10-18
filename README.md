@@ -12,12 +12,13 @@ A merchandiser wants to publish a statement without spending an afternoon reconc
 **Jobs to be done**
 
 1. **One click:** select an exact variant and dimensions; the agent traces its evidence, checks units and returns a safe status.
-2. **No made-up certainty:** 35 cm and 12 in (30.48 cm) are conflicting manufacturer claims. Never auto-pick the more convenient number.
-3. **Counterfactual review:** before selecting the source, compare how each verified alternative would change the outcome and downstream correction workload. Neither possibility becomes truth automatically.
-4. **No repeat manual work:** once a reviewer approves the engineering drawing, graph traversal locates every dependent claim and prepares exact replacement drafts.
-5. **No cross-contamination:** Deep variant, older revision and different region remain separate.
-6. **Remember why:** persist the source-of-truth decision and reviewer reason as graph nodes and edges, and retrieve them next time.
-7. **Human control:** no autonomous publishing or external changes. A documentary PASS is *not* a physical-product guarantee.
+2. **Try a new source without editing the graph:** paste a synthetic text excerpt with a documented limit, automatically extract its exact quotation and unit, compare its effects against graph-linked claims, then discard the preview.
+3. **No made-up certainty:** 35 cm and 12 in (30.48 cm) are conflicting manufacturer claims. Never auto-pick the more convenient number.
+4. **Counterfactual review:** before selecting the source, compare how each verified alternative would change the outcome and downstream correction workload. Neither possibility becomes truth automatically.
+5. **No repeat manual work:** once a reviewer approves the engineering drawing, graph traversal locates every dependent claim and prepares exact replacement drafts.
+6. **No cross-contamination:** Deep variant, older revision and different region remain separate.
+7. **Remember why:** persist the source-of-truth decision and reviewer reason as graph nodes and edges, and retrieve them next time.
+8. **Human control:** no autonomous publishing or external changes. A documentary PASS is *not* a physical-product guarantee.
 
 ## Real graph architecture
 
@@ -80,7 +81,7 @@ For the live integration verification, ensure `GET /api/health` says `source: re
 ## Caveats and non-goals
 
 - Dataset is 100% synthetic: fictional brand, sources, quotations, SKUs and documents. No UDF data or personal/customer information is used.
-- The agent uses a *deterministic tool-directed decision loop*, not a generative LLM runtime. It makes decisions from connected graph state, discloses ambiguity, drafts safe edits and keeps graph memory. This limits claims about model inference.
+- The agent uses a *deterministic tool-directed decision loop* and a strict extractor for one documented source-statement format, not a generative LLM runtime. It makes decisions from connected graph state, discloses ambiguity, drafts safe edits and keeps graph memory. This limits claims about model inference.
 - It evaluates *documented compatibility*, not experimentally measured product fit. There are no real claims of measured returns prevented, time saved or merchant adoption.
 - Single local reviewer, one Uvicorn worker. No user auth, hardened concurrency, multitenant support, real storefront integration, invoice edits or unattended publication.
 - The demo video and **real database integration test are not verified in this runtime**; do not state otherwise. Follow `docs/VIDEO_SCRIPT.md` and `docs/RELEASE_GATE.md` on a compatible machine before submitting.

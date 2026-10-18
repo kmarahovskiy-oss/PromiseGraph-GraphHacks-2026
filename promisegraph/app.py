@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from .domain import analyze
+from .domain import analyze, preview_source
 from .store import GraphStore
 
 BASE=Path(__file__).resolve().parent.parent
@@ -17,6 +17,10 @@ class MeasureRequest(BaseModel):
     mattress: str=Field(default='30',max_length=30)
     topper: str=Field(default='4',max_length=30)
     unit: str=Field(default='cm',max_length=5)
+
+class SourcePreviewRequest(MeasureRequest):
+    title: str=Field(min_length=3,max_length=100)
+    text: str=Field(min_length=30,max_length=2000)
 
 class DecisionRequest(MeasureRequest):
     evidence_id: str=Field(min_length=1,max_length=100)
@@ -69,6 +73,12 @@ def create_app(initial_store=None):
                           'detail':'All linked claims supported by selected evidence'})
         value['agent_trace']=trace
         return value
+    @app.post('/api/preview-source')
+    def preview(r:SourcePreviewRequest):
+        try:
+            return preview_source(db().bundle(r.id),r.title,r.text,r.mattress,r.topper,r.unit)
+        except KeyError as exc:raise HTTPException(404,str(exc)) from exc
+        except ValueError as exc:raise HTTPException(422,str(exc)) from exc
     @app.post('/api/decide')
     def decide(r:DecisionRequest):
         if not r.confirmed: raise HTTPException(422,'Explicit human confirmation is required')

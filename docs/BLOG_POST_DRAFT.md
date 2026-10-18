@@ -41,6 +41,10 @@ FalkorDB Cypher traversals locate the exact evidence, trace dependent customer-f
 
 The test we apply to the architecture is simple: **remove FalkorDB**. Without the graph, the live service cannot retrieve its evidence, impacted documents or review history. There is no hidden JSON “demo database” in the live endpoint.
 
+## Bring your own source — without breaking the graph
+
+The updated prototype also accepts a synthetic source excerpt pasted into the workbench. A strict parser recognises an explicit total-height statement and preserves its exact quotation and unit conversion. PromiseGraph then temporarily adds this witness to the retrieved graph context and previews what would change. The shared demo graph is not mutated, and the preview cannot be approved as if it were a stored source. This is bounded document intake, **not open-ended generative document understanding**; broader formats and real integrations remain future work.
+
 ## What happens after a human decision?
 
 If the reviewer confirms the 12-inch engineering drawing, PromiseGraph marks the 34 cm promise unsupported. It prepares proposed corrections for the linked store listing and sales quotation. It retains the 28 cm FAQ, which remains supported, and does not touch the 40 cm Deep version.

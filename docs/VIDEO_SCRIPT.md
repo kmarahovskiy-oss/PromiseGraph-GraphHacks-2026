@@ -21,3 +21,5 @@
 **145–150s · Close.** “PromiseGraph: fewer manual checks, traceable decisions, and safe promises. All data is synthetic; built with AI coding assistance.”
 
 **Technical checkpoints for recording:** actual DB running; no error 503; live sources and paths; persistent decision and two impact corrections; no browser staging stubs; no false metrics or prizes.
+
+**Optional second take (if time allows):** paste the example “New revision notice. Maximum total mattress-and-topper height: 32 cm.”, select Preview source impact, and clearly show it is read-only, not stored or approved. This demonstrates novel input and truthful extraction limitations.

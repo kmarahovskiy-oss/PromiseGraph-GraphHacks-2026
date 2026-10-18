@@ -8,3 +8,7 @@
 .scenario p { margin:0; line-height:1.45; }
 .scenario .subtitle { overflow-wrap: anywhere; }
 .scenario small { opacity:.72; }
+
+.preview-button { margin-top:11px; width:100%;text-align:center;display:block; }
+.controls input[type=text] {outline:none;min-width:0;width:100%;border-radius:9px;padding:11px;color:var(--text);background:var(--panel2);border:1px solid #2b4c4f}
+#previewNote {margin:10px 0 0;font-size:11px;}

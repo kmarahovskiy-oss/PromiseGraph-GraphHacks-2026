@@ -27,3 +27,15 @@ def test_lifecycle_and_contract():
     assert agreed.json()['result']['impact_count']==2
     assert c.post('/api/export',json={'id':'standard-r3'}).json()['automatically_published'] is False
     assert c.get('/api/paths/standard-r3').status_code==200
+
+def test_source_preview_requires_real_graph_bundle_and_does_not_write():
+    store=FauxStore();c=TestClient(create_app(store))
+    response=c.post('/api/preview-source',json={'id':'standard-r3','title':'Updated drawing',
+        'text':'New R3. Maximum total mattress-and-topper height: 32 cm.'})
+    assert response.status_code==200
+    body=response.json()
+    assert body['preview'] is True and len(body['evidence'])==3
+    assert store.data['authority'] is None and len(store.data['evidence'])==2
+    bad=c.post('/api/preview-source',json={'id':'standard-r3','title':'Something',
+        'text':'A very long but unstructured product description that has no maximum height.'})
+    assert bad.status_code==422
