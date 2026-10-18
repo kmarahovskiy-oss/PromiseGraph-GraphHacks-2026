@@ -157,6 +157,8 @@ def create_app(initial_store=None):
     app.mount('/static',StaticFiles(directory=BASE/'promisegraph/static'),name='static')
     @app.get('/story')
     def story(): return FileResponse(BASE/'promisegraph/static/story.html')
+    @app.get('/article')
+    def article(): return FileResponse(BASE/'promisegraph/static/article.html')
     @app.get('/')
     def index(): return FileResponse(BASE/'promisegraph/static/index.html')
     return app

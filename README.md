@@ -84,6 +84,8 @@ For the live integration verification, ensure `GET /api/health` says `source: re
 
 ## Product story and decision value
 
+[**Read the full illustrated project article**](https://promisegraph-graphhacks-2026.onrender.com/article) — the customer problem, graph modelling decisions, tests, technical limits and demonstration. This article is also in `docs/ARTICLE_FINAL.md`.
+
 [**Explore the human-centred product story**](https://promisegraph-graphhacks-2026.onrender.com/story) — the problem, three workflows, the traceable FalkorDB decision, live workbench and real narrated video. The story is hosted by the same Render service, not a separate test site. All examples are synthetic and no financial benefits are invented.
 
 ## Screens & controls

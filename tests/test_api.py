@@ -85,3 +85,10 @@ def test_story_and_workspace_links_available():
     front=client.get('/')
     assert front.status_code==200
     assert 'href="/story"' in front.text
+
+
+def test_public_article_contains_disclosure_and_real_graph_story():
+    r=TestClient(create_app(FauxStore())).get('/article')
+    assert r.status_code==200
+    assert 'FalkorDB' in r.text and 'synthetic' in r.text
+    assert 'ChatGPT coding assistance' in r.text
