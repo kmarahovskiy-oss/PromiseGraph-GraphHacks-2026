@@ -1,25 +1,15 @@
-# Genuine 150-second demo script (English)
+# Archived storyboard — shipped video already verified
 
-**Do not create a simulated/screen-mock video and call it a running app. Record this only after real FalkorDB is connected and verified.**
+This longer 150-second outline was used in planning; it is not the final spoken narration.
 
-**00–15s · User pain.** “Every online-store description is a promise. When one spec sheet disagrees with another, that error multiplies across product pages and quotes. This costs customer trust and creates returns.”
+**The actual 85-second narrated browser demo was recorded against a real FalkorDB server with Playwright, with Google TTS English narration, and is published at:**
 
-**15–35s · One-click action.** Open live app; show FalkorDB node/edge counts; select `AstraRest Standard • R3`, 30 cm mattress, 4 cm topper, click *Run impact analysis*.
+https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4
 
-**35–55s · Connected evidence.** “The graph follows the exact SKU, revision and region to two incompatible sources. One says 35 cm, the other 12 inches — actually 30.48 cm. The agent refuses to make a guess.”
+The recording and its source are reproducible through GitHub Actions:
 
-**55–70s · Compare counterfactual impacts.** Two live alternatives show zero versus two downstream corrections, but neither is presented as truth.
+https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/live-demo.yml
 
-**70–90s · Human control.** Open the evidence; explain why the signed drawing is authoritative **as an invented demonstration judgment**, choose the 12-inch drawing and record a reason. Watch the status change to unsupported.
+Scenes: conflicting supplier limits; read-only new source preview; documented human approval; downstream corrections; graph paths; decision history; unaffected alternate variant. All examples are fictional and all automated edits stay drafts.
 
-**90–115s · Automated impact work.** “FalkorDB traces two impacted dependent documents: an ecommerce listing and sales quote. Draft corrections are prepared automatically, but nothing gets published without approval. The 28 cm FAQ stays valid.”
-
-**115–130s · The isolation proof.** Switch to `AstraRest Deep • R3` with 38 cm. “The Deep variant has its own 40 cm limit. The agent never edits a different SKU or an old revision.”
-
-**130–145s · Explain why FalkorDB matters.** Show `/api/paths/standard-r3` output/graph edge witness; show audit timeline after refresh/restart. “Remove the graph and the app cannot find sources, affected claims or reviewer memory.”
-
-**145–150s · Close.** “PromiseGraph: fewer manual checks, traceable decisions, and safe promises. All data is synthetic; built with AI coding assistance.”
-
-**Technical checkpoints for recording:** actual DB running; no error 503; live sources and paths; persistent decision and two impact corrections; no browser staging stubs; no false metrics or prizes.
-
-**Optional second take (if time allows):** paste the example “New revision notice. Maximum total mattress-and-topper height: 32 cm.”, select Preview source impact, and clearly show it is read-only, not stored or approved. This demonstrates novel input and truthful extraction limitations.
+Do not confuse this storyboard with the published final video. A successful workflow run proves recording; the participant must still submit the video URL through WeMakeDevs.

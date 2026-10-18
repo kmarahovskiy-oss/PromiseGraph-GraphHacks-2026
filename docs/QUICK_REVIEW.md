@@ -21,14 +21,14 @@ Review `promisegraph/queries.py` to understand each actual Cypher traversal. The
 - Select **Deep R3**: unaffected. Refresh and check audit history.
 
 ## What was and was not verified
-Local domain/API-contract tests use test doubles; they do not validate actual graph execution. Real FalkorDB integration tests and a genuine narrated browser recording completed successfully in GitHub Actions. The participant still needs to watch the video, inspect the design, and independently understand and approve the submission. On free Render services, an embedded graph may lose its filesystem after restart; do not claim persistent cross-restart memory.
+Local domain/API-contract tests use test doubles; they do not validate actual graph execution. Real FalkorDB integration tests and a genuine narrated browser recording completed successfully in GitHub Actions. The participant confirmed technical review on October 18; the final WeMakeDevs form submission remains a separate step. On free Render services, an embedded graph may lose its filesystem after restart; do not claim persistent cross-restart memory.
 
-## Required participant tasks
-1. Read and understand the graph model, queries and agent design.
-2. Run or inspect the genuine real-graph verification and demo.
-3. Decide whether the evidence-based constraints and non-generative agent behavior are correctly represented.
-4. Review the AI coding assistant disclosure and source provenance.
-5. Approve the final public submission separately after reviewing the video.
+## Participant technical review responsibilities and submission gate
+1. Technical review was explicitly confirmed by the participant on October 18; they are responsible for understanding and defending the graph model, queries and design.
+2. Real graph and browser workflows were executed successfully and are available publicly for inspection.
+3. The participant directed the user pain and safety controls; no LLM inference is claimed.
+4. AI assistance and pre-event concept/prototype provenance are disclosed in README and provenance notes.
+5. Final public **event submission has not been confirmed**. Submit through registered WeMakeDevs account and retain the confirmation.
 
 ## Participant confirmation
 
