@@ -34,9 +34,9 @@ try:
         expect(page.locator('#portfolioSummary')).to_contain_text('3 variants checked',timeout=20000)
         expect(page.locator('button[data-variant]')).to_have_count(3,timeout=20000)
         story=page.request.get(URL+'/story',timeout=20000)
-        assert story.status_code==200 and 'One bad claim.' in story.text()
+        assert story.status==200 and 'One bad claim.' in story.text()
         article=page.request.get(URL+'/article',timeout=20000)
-        assert article.status_code==200 and 'FalkorDB' in article.text()
+        assert article.status==200 and 'FalkorDB' in article.text()
         page.evaluate("""() => {
             const x=document.createElement('div');x.id='filmCaption';
             Object.assign(x.style,{position:'fixed',bottom:'20px',left:'20px',zIndex:'100000',
