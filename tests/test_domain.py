@@ -54,3 +54,21 @@ def test_exact_unit_edge():
     b=bundle(0);b['authority']='e-standard-drawing'
     assert analyze(b,'30.48','0')['state']=='PASS'
     assert analyze(b,'30.49','0')['state']=='FAIL'
+
+def test_counterfactuals_show_impact_without_choosing_truth():
+    b=bundle(0)
+    r=analyze(b)
+    assert r['state']=='REVIEW_REQUIRED'
+    assert r['authority_id'] is None
+    alt={a['evidence_id']:a for a in r['alternatives']}
+    assert alt['e-standard-supplier']['affected_count']==0
+    assert alt['e-standard-drawing']['affected_count']==2
+    assert alt['e-standard-drawing']['requested_result']=='FAIL'
+    assert b['authority'] is None
+
+def test_no_counterfactual_when_evidence_invalid_or_resolved():
+    b=bundle(0)
+    b['evidence'][0]['quote']='wrong quote'
+    assert analyze(b)['alternatives']==[]
+    b=bundle(0);b['authority']='e-standard-drawing'
+    assert analyze(b)['alternatives']==[]

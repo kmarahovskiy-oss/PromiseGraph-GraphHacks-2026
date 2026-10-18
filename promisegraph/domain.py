@@ -71,6 +71,22 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
         limit = measure(chosen['normalized_cm'], 'cm') if chosen else values[0]
         state = 'PASS' if required <= limit else 'FAIL'
         reason = 'Fits according to documented limit' if state == 'PASS' else 'Requested dimensions exceed documented limit'
+    # Counterfactuals are review aids, not decisions. Every candidate comes from
+    # a verified graph-backed evidence node; no source is silently preferred.
+    alternatives = []
+    if not rejected and len(values) > 1 and not chosen:
+        for e in verified:
+            candidate_limit = measure(e['normalized_cm'], 'cm')
+            unsupported = [p for p in bundle['promises']
+                           if measure(p['required_cm'], 'cm') > candidate_limit]
+            alternatives.append({
+                'evidence_id': e['id'], 'title': e['title'],
+                'limit_cm': fmt(candidate_limit),
+                'requested_result': 'PASS' if required <= candidate_limit else 'FAIL',
+                'affected_count': len(unsupported),
+                'affected_titles': [p['title'] for p in unsupported],
+                'disclaimer': 'What-if scenario; not an approved source or final decision.'
+            })
     changes = []
     for p in bundle['promises']:
         # Traceable, variant-scoped drafts; no speculative output if source truth is missing.
@@ -85,7 +101,7 @@ def analyze(bundle, mattress='30', topper='4', unit='cm'):
     return {'context':bundle['context'], 'state':state, 'reason':reason, 'required_cm':fmt(required),
             'limit_cm':fmt(limit) if limit is not None else None,
             'source_limits_cm':[fmt(v) for v in values], 'authority_id':bundle['authority'],
-            'evidence':verified, 'rejected_evidence':rejected,
+            'evidence':verified, 'rejected_evidence':rejected, 'alternatives':alternatives,
             'fingerprint':fingerprint(bundle), 'affected':changes,
             'impact_count':sum(c['risk']=='wrong_promise' for c in changes),
             'needs_source_review':state in ('REVIEW_REQUIRED','BLOCKED'),

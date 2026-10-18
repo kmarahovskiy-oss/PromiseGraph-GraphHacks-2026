@@ -13,10 +13,11 @@ A merchandiser wants to publish a statement without spending an afternoon reconc
 
 1. **One click:** select an exact variant and dimensions; the agent traces its evidence, checks units and returns a safe status.
 2. **No made-up certainty:** 35 cm and 12 in (30.48 cm) are conflicting manufacturer claims. Never auto-pick the more convenient number.
-3. **No repeat manual work:** once a reviewer approves the engineering drawing, graph traversal locates every dependent claim and prepares exact replacement drafts.
-4. **No cross-contamination:** Deep variant, older revision and different region remain separate.
-5. **Remember why:** persist the source-of-truth decision and reviewer reason as graph nodes and edges, and retrieve them next time.
-6. **Human control:** no autonomous publishing or external changes. A documentary PASS is *not* a physical-product guarantee.
+3. **Counterfactual review:** before selecting the source, compare how each verified alternative would change the outcome and downstream correction workload. Neither possibility becomes truth automatically.
+4. **No repeat manual work:** once a reviewer approves the engineering drawing, graph traversal locates every dependent claim and prepares exact replacement drafts.
+5. **No cross-contamination:** Deep variant, older revision and different region remain separate.
+6. **Remember why:** persist the source-of-truth decision and reviewer reason as graph nodes and edges, and retrieve them next time.
+7. **Human control:** no autonomous publishing or external changes. A documentary PASS is *not* a physical-product guarantee.
 
 ## Real graph architecture
 

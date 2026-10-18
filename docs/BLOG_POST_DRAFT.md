@@ -27,6 +27,8 @@ A naive algorithm picks 35 cm and says “Yes.” An equally naive algorithm pic
 
 That pause is a feature. Confidence without evidence is a liability.
 
+Before the reviewer chooses, PromiseGraph now shows a **counterfactual side-by-side**: accepting the 35 cm catalogue would leave the two 34 cm promises supported, whereas accepting the 30.48 cm drawing would flag two of them. The previews are explicitly *not* approvals. This makes the cost of the decision legible without pretending the algorithm knows which conflicting document is correct.
+
 ## Why FalkorDB is the engine, not a logo
 
 We represent the claim as a connected graph:

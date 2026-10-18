@@ -8,7 +8,9 @@
 
 **35–55s · Connected evidence.** “The graph follows the exact SKU, revision and region to two incompatible sources. One says 35 cm, the other 12 inches — actually 30.48 cm. The agent refuses to make a guess.”
 
-**55–90s · Human control.** Open the evidence; explain why the signed drawing is authoritative **as an invented demonstration judgment**, choose the 12-inch drawing and record a reason. Watch the status change to unsupported.
+**55–70s · Compare counterfactual impacts.** Two live alternatives show zero versus two downstream corrections, but neither is presented as truth.
+
+**70–90s · Human control.** Open the evidence; explain why the signed drawing is authoritative **as an invented demonstration judgment**, choose the 12-inch drawing and record a reason. Watch the status change to unsupported.
 
 **90–115s · Automated impact work.** “FalkorDB traces two impacted dependent documents: an ecommerce listing and sales quote. Draft corrections are prepared automatically, but nothing gets published without approval. The 28 cm FAQ stays valid.”
 
