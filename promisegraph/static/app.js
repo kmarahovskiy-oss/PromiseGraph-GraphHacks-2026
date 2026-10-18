@@ -66,9 +66,13 @@ async function preview(){
  }catch(e){if(sequence===analysisSequence)$('previewNote').textContent='Source preview unavailable: '+e.message}
  finally{$('preview').disabled=false}}
 async function approve(){if(!report)return;try{if(report.preview){alert('A read-only replay or preview cannot be approved. Run a fresh graph analysis first.');return}if(JSON.stringify(payload())!==JSON.stringify(reportInputs)){alert('Inputs changed. Run the analysis again before deciding.');return}if(!$('confirm').checked){alert('Please confirm you reviewed the evidence.');return}
- const data={...payload(),evidence_id:$('authority').value,reason:$('reason').value,fingerprint:report.fingerprint,confirmed:true};
- $('approve').disabled=true;const next=await api('/api/decide',{method:'POST',body:JSON.stringify(data)});render(next.result);
+ const inputs=payload(),sequence=analysisSequence;
+ const data={...inputs,evidence_id:$('authority').value,reason:$('reason').value,fingerprint:report.fingerprint,confirmed:true};
+ $('approve').disabled=true;const next=await api('/api/decide',{method:'POST',body:JSON.stringify(data)});
+ if(sequence!==analysisSequence||JSON.stringify(payload())!==JSON.stringify(inputs))return;
+ report=next.result;reportInputs=inputs;render(report);
  $('details').textContent='Decision saved to FalkorDB: '+next.decision_id;$('details').classList.remove('hidden');
+ await scanPortfolio();
  }catch(e){alert(e.message)}finally{$('approve').disabled=false}}
 function humanDetail(name,data){
  if(name==='REVIEW HISTORY'){
@@ -88,7 +92,7 @@ async function detail(name,path){if(!payload().id)return;const sequence=analysis
  const data=await api(path);
  if(sequence===analysisSequence){$('details').textContent=humanDetail(name,data);$('details').classList.remove('hidden')}
  }catch(e){if(sequence===analysisSequence)alert(e.message)}}
-async function exportDraft(){if(!report||!reportInputs){alert('Run an analysis before exporting.');return}try{
+async function exportDraft(){if(!report||!reportInputs){alert('Run an analysis before exporting.');return}if(JSON.stringify(payload())!==JSON.stringify(reportInputs)){alert('Inputs changed. Run analysis again before exporting.');return}try{
  // Export must represent the CURRENT on-screen result, including a read-only
  // replay or preview, rather than silently querying a different graph decision.
  const selected=report,params={...reportInputs};
