@@ -70,7 +70,24 @@ async function approve(){if(!report)return;try{if(report.preview){alert('A read-
  $('approve').disabled=true;const next=await api('/api/decide',{method:'POST',body:JSON.stringify(data)});render(next.result);
  $('details').textContent='Decision saved to FalkorDB: '+next.decision_id;$('details').classList.remove('hidden');
  }catch(e){alert(e.message)}finally{$('approve').disabled=false}}
-async function detail(name,path){if(!payload().id)return;const sequence=analysisSequence;try{const data=await api(path);if(sequence===analysisSequence){$('details').textContent=name+'\n'+JSON.stringify(data,null,2);$('details').classList.remove('hidden')}}catch(e){if(sequence===analysisSequence)alert(e.message)}}
+function humanDetail(name,data){
+ if(name==='REVIEW HISTORY'){
+  if(!Array.isArray(data)||!data.length)return 'No reviewer decisions saved for this variant yet.';
+  return ['Saved source-of-truth decisions',...data.map((d,i)=>
+    (i+1)+'. Evidence: '+d.evidence_id+'\n   Date: '+d.at+'\n   Reason: '+d.reason+'\n   Audit ID: '+d.id)].join('\n\n');
+ }
+ if(name==='GRAPH PATHS'){
+  const rows=data?.relationships||[];
+  if(!rows.length)return 'No connected customer-facing promises found for this variant.';
+  return ['Exact variant → evidence attribute → dependent promise → publication',
+    ...rows.map((r,i)=>(i+1)+'. '+r.variant+' → '+r.attribute+' → '+r.promise+' → '+r.document)].join('\n');
+ }
+ return JSON.stringify(data,null,2);
+}
+async function detail(name,path){if(!payload().id)return;const sequence=analysisSequence;try{
+ const data=await api(path);
+ if(sequence===analysisSequence){$('details').textContent=humanDetail(name,data);$('details').classList.remove('hidden')}
+ }catch(e){if(sequence===analysisSequence)alert(e.message)}}
 async function exportDraft(){if(!report||!reportInputs){alert('Run an analysis before exporting.');return}try{
  // Export must represent the CURRENT on-screen result, including a read-only
  // replay or preview, rather than silently querying a different graph decision.
