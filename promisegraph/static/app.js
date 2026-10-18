@@ -41,6 +41,14 @@ async function scanPortfolio(){
  }catch(e){$('portfolioSummary').textContent='Portfolio scan unavailable: '+e.message}
  finally{button.disabled=false}
 }
+async function reconsider(){
+ await check();
+ if(!report)return;
+ if((report.rejected_evidence||[]).length){alert('Cannot review invalid sources. Repair their quotations first.');return}
+ if(!(report.evidence||[]).length){alert('No verified source available.');return}
+ $('review').classList.remove('hidden');
+ $('review').scrollIntoView({behavior:'smooth',block:'center'});
+}
 async function replay(){
  ++analysisSequence;$('check').disabled=false;
  try{$('replay').disabled=true;
@@ -60,6 +68,6 @@ async function approve(){if(!report)return;try{if(!$('confirm').checked){alert('
  }catch(e){alert(e.message)}finally{$('approve').disabled=false}}
 async function detail(name,path){if(!payload().id)return;try{const data=await api(path);$('details').textContent=name+'\n'+JSON.stringify(data,null,2);$('details').classList.remove('hidden')}catch(e){alert(e.message)}}
 async function exportDraft(){if(!report)return;try{const data=await api('/api/export',{method:'POST',body:JSON.stringify(payload())});const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='promisegraph-review-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000)}catch(e){alert(e.message)}}
-$('check').addEventListener('click',()=>{$('previewNote').textContent='';check()});$('scanPortfolio').addEventListener('click',scanPortfolio);$('replay').addEventListener('click',replay);$('preview').addEventListener('click',preview);$('approve').addEventListener('click',approve);$('paths').addEventListener('click',()=>detail('GRAPH PATHS','/api/paths/'+encodeURIComponent(payload().id)));$('history').addEventListener('click',()=>detail('REVIEW HISTORY','/api/audit/'+encodeURIComponent(payload().id)));$('export').addEventListener('click',exportDraft);
+$('check').addEventListener('click',()=>{$('previewNote').textContent='';check()});$('reconsider').addEventListener('click',reconsider);$('scanPortfolio').addEventListener('click',scanPortfolio);$('replay').addEventListener('click',replay);$('preview').addEventListener('click',preview);$('approve').addEventListener('click',approve);$('paths').addEventListener('click',()=>detail('GRAPH PATHS','/api/paths/'+encodeURIComponent(payload().id)));$('history').addEventListener('click',()=>detail('REVIEW HISTORY','/api/audit/'+encodeURIComponent(payload().id)));$('export').addEventListener('click',exportDraft);
 $('variant').addEventListener('change',()=>{$('previewNote').textContent='';check()});$('mattress').addEventListener('change',check);$('topper').addEventListener('change',check);
 startup();

@@ -25,7 +25,7 @@ A merchandiser wants to publish a statement without spending an afternoon reconc
 1. Open the live service, select **Scan all variants** to get a graph-backed risk queue across all sample SKUs and revisions.
 2. Select the conflicted SKU and review two alternative source decisions and their exact downstream effects.
 3. Even if a previous visitor approved a source, **Replay original source conflict** safely reconstructs the original alternatives in a read-only view without deleting decisions.
-4. Choose a source based on the documentary evidence, record a reason, and inspect saved audit history. Every generated correction remains an editorial draft.
+4. Choose a source based on the documentary evidence, record a reason, and inspect saved audit history. The **Review / revise source decision** control opens a deliberate new review even after a prior visitor selected a source; earlier decisions remain in the graph. Every generated correction remains an editorial draft.
 5. Switch to a different SKU and confirm it is unaffected. No customer data or private company infrastructure is used.
 
 The portfolio scan is automated graph-tool orchestration, **not** a claim that a generative LLM is running. Shared demo decisions are visible to all visitors during the free-service process lifetime; users should never enter private documents or make real-business decisions with the demo.
