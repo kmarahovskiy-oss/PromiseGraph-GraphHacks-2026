@@ -1,6 +1,7 @@
 """Authentic browser demo; real FalkorDB is required, no mocks or fake screenshots."""
 from pathlib import Path
-import os, subprocess, sys, time, json, urllib.request, shutil
+import os, subprocess, sys, time, json, urllib.request, shutil, tempfile
+from gtts import gTTS
 from playwright.sync_api import sync_playwright, expect
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -74,40 +75,74 @@ try:
         context.close()
         browser.close()
         shutil.move(movie.path(),str(OUT/'real-browser.webm'))
-    # Narration follows the demonstrated browser scenes instead of finishing early.
-    # All statements are tied to interactions that the Playwright test verifies.
+    # Use the same Google TTS family as the previously approved PactSignal video.
+    # Timed separate phrases; no robotic espeak or audio that ends early.
     lines=[
-        (0,"A product description can become an expensive promise. PromiseGraph checks the evidence before publication."),
-        (8,"Two specifications disagree for one exact product variant. The graph compares how each choice would affect dependent claims."),
-        (16,"We can paste a new supplier statement and preview the impact without changing our shared graph."),
-        (24,"Conflicting sources are not silently resolved. The agent pauses and requires a human decision."),
-        (31,"The engineering drawing is selected, with a recorded reason. The decision is saved in real FalkorDB."),
-        (39,"Two promises need editorial corrections. The supported FAQ remains untouched and nothing is automatically published."),
-        (48,"Here are real graph paths linking the product specification to customer-facing documents."),
-        (55,"And this is the stored decision history. The next request can retrieve that reasoning."),
-        (62,"A different SKU still passes. Similar-looking product variants are never mixed together."),
-        (70,"PromiseGraph: traceable evidence, safe corrections, fewer manual checks. Synthetic data, built with disclosed AI assistance."),
+        (2,"A product description can become an expensive promise. PromiseGraph checks the evidence before publication."),
+        (10,"Two specifications disagree for the exact product variant. FalkorDB traces both sources."),
+        (18,"Paste a new supplier statement. Preview its impact without modifying the graph."),
+        (26,"Conflicting sources must not be silently resolved. The agent requests human review."),
+        (34,"The engineering drawing is chosen. A reviewer records the reason in FalkorDB."),
+        (43,"Two promises need corrections. The supported FAQ is left untouched."),
+        (52,"Real graph paths link each product specification to its customer-facing documents."),
+        (59,"Here is the saved review history. Future checks can retrieve this decision."),
+        (67,"A different product version still passes. Its information stays separate."),
+        (75,"PromiseGraph. Traceable evidence, safe corrections, fewer manual checks. Fictional data.")
     ]
-    voice_files=[]
-    for i,(offset,spoken) in enumerate(lines):
-        voice_path=OUT/f'voice-scene-{i:02d}.wav'
-        subprocess.run(['espeak-ng','-v','en-gb','-s','170','-w',str(voice_path),spoken],check=True)
-        voice_files.append((offset,voice_path))
-    audio_cmd=['ffmpeg','-y']
-    for _,source in voice_files:
-        audio_cmd+=['-i',str(source)]
-    delayed=[]
-    for i,(offset,_) in enumerate(voice_files):
-        delayed.append(f'[{i}:a]adelay={offset*1000}:all=1[a{i}]')
-    mix=''.join(f'[a{i}]' for i in range(len(voice_files)))
-    filters=';'.join(delayed+[f'{mix}amix=inputs={len(voice_files)}:duration=longest:dropout_transition=0,apad[out]'])
-    voice_path=OUT/'voice-timed.wav'
-    audio_cmd+=['-filter_complex',filters,'-map','[out]','-t','85.52',str(voice_path)]
-    subprocess.run(audio_cmd,check=True)
-    subprocess.run(['ffmpeg','-y','-i',str(OUT/'real-browser.webm'),'-i',str(voice_path),
-                    '-map','0:v','-map','1:a','-c:v','libx264','-preset','veryfast',
-                    '-crf','25','-pix_fmt','yuv420p','-c:a','aac','-b:a','128k',
-                    '-shortest',str(OUT/'PromiseGraph_Real_Demo_Narrated.mp4')],check=True)
+    with tempfile.TemporaryDirectory(prefix='promisegraph-gtts-') as tmp:
+        root=Path(tmp)
+        audio_inputs=[]
+        filters=[]
+        voice_labels=[]
+        recorded_cues=[]
+        for i,(offset,phrase) in enumerate(lines):
+            mp3=root/f'voice-{i:02d}.mp3'
+            for retry in range(4):
+                try:
+                    # Standard Google English TTS voice, no synthetic robot alternative.
+                    gTTS(text=phrase,lang='en',tld='com',slow=False).save(str(mp3))
+                    break
+                except Exception:
+                    if retry==3:raise
+                    time.sleep(3*(retry+1))
+            probe=subprocess.check_output(['ffprobe','-v','error',
+                '-show_entries','format=duration','-of',
+                'default=noprint_wrappers=1:nokey=1',str(mp3)],text=True)
+            clip_seconds=float(probe.strip())
+            audio_inputs.extend(['-i',str(mp3)])
+            label=f'g{i}'
+            filters.append(f'[{i+1}:a]aresample=48000,'
+                f'aformat=sample_fmts=fltp:channel_layouts=stereo,'
+                f'adelay={offset*1000}|{offset*1000}[{label}]')
+            voice_labels.append(f'[{label}]')
+            recorded_cues.append({'start_seconds':offset,'speech':phrase,
+                                  'clip_seconds':round(clip_seconds,2)})
+        video_seconds=float(subprocess.check_output(['ffprobe','-v','error',
+            '-show_entries','format=duration','-of',
+            'default=noprint_wrappers=1:nokey=1',
+            str(OUT/'real-browser.webm')],text=True).strip())
+        filters.append(''.join(voice_labels)
+            +f'amix=inputs={len(lines)}:duration=longest:normalize=0,'
+            +'acompressor=threshold=-19dB:ratio=2.2:attack=12:release=160,'
+            +'loudnorm=I=-8:TP=-0.8:LRA=5,apad,'
+            +f'atrim=duration={video_seconds:.3f}[narrated]')
+        subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y',
+            '-i',str(OUT/'real-browser.webm'),*audio_inputs,
+            '-filter_complex',';'.join(filters),
+            '-map','0:v:0','-map','[narrated]',
+            '-c:v','libx264','-preset','veryfast','-crf','25',
+            '-pix_fmt','yuv420p',
+            '-c:a','aac','-b:a','192k','-ar','48000','-ac','2',
+            '-movflags','+faststart',
+            str(OUT/'PromiseGraph_Real_Demo_Narrated.mp4')],check=True)
+        (OUT/'voice-settings.json').write_text(json.dumps({
+            'source_reference':'PactSignal approved 17 Oct 2026',
+            'engine':'Google TTS','language':'English','tld':'com',
+            'output':'stereo AAC 48000 Hz; target -8 LUFS, -0.8 dBTP',
+            'video_duration_seconds':video_seconds,
+            'scenes':recorded_cues
+        },indent=2))
+    print('GOOGLE_TTS_AUDIO_REPLACED',len(lines),'scenes')
     (OUT/'run-evidence.json').write_text(json.dumps(health,indent=2))
     print('REAL FALKORDB VERIFIED; NARRATED VIDEO CREATED')
 finally:
