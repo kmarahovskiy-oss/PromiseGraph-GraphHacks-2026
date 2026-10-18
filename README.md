@@ -5,6 +5,18 @@
 
 > One bad product promise can appear in a product page, a quotation and an FAQ. PromiseGraph traces contradictory specifications to the exact SKU and revision and drafts all necessary corrections before the error becomes an expensive return.
 
+## Submitted entry and judge links
+
+**Submitted:** October 18, 2026, approximately 20:54 Kyiv time. The authenticated WeMakeDevs portal confirmed **SUBMITTED** for **PromiseGraph — Before You Promise**, solo entry, track **Agents That Act on Connected Data**. This records portal receipt, not judging approval or an award.
+
+- [Working application](https://promisegraph-graphhacks-2026.onrender.com/)
+- [YouTube demo — unlisted, accessible by link](https://www.youtube.com/watch?v=3_iHbNts5us)
+- [Project article / AirPods side-prize entry](https://promisegraph-graphhacks-2026.onrender.com/article)
+- [Product story](https://promisegraph-graphhacks-2026.onrender.com/story)
+- [Verification workflow](https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/verify.yml)
+
+The entry includes separate repository, demo-video, live-deployment and blog fields. This repository contains the source, setup instructions, graph model, Cypher queries and test evidence; judges can inspect or run it locally.
+
 ## User pain & promised outcome
 
 A merchandiser wants to publish a statement without spending an afternoon reconciling spec sheets. A sales person shouldn't have to discover that their quote contradicts an engineering drawing after delivery. Today the problem is fragmented across source documents, product variants, measurements, published claims and approval history. Keyword search cannot reliably trace *the exact* impacted promises or distinguish similar variants.
@@ -108,7 +120,7 @@ Built with significant assistance from ChatGPT. The original idea/preparation pr
 
 Official rules: https://www.wemakedevs.org/hackathons/falkordb/rules
 
-Only public or synthetic data are used; no paid tools or external service credentials are required. No submission was performed as part of creating this package.
+Only public or synthetic data are used; no paid tools or external service credentials are required. The later portal submission was completed on October 18; see the submission status and links above.
 
 ### Mandatory live graph smoke test (separate from local checks)
 
@@ -124,4 +136,4 @@ The application can alternatively start the real embedded FalkorDBLite (`FALKORD
 
 ## Submission and integrity status — 18 October 2026
 
-The hackathon registration was completed by the participant before submission preparation, and on 18 October the participant confirmed that they had technically reviewed the implementation. The final entry form must still be submitted in the participant's own authenticated WeMakeDevs dashboard; a GitHub publication alone is not a hackathon submission. See [the prepared submission details](docs/SUBMISSION_READY.md) and [the requirement-by-requirement checklist](docs/RULES_AUDIT_2026-10-18.md).
+The hackathon registration was completed by the participant before submission preparation, and on 18 October the participant confirmed that they had technically reviewed the implementation. The final entry form was submitted through the participant's authenticated WeMakeDevs account at approximately 20:54 Kyiv time. The portal displayed **SUBMITTED**, with the repository, unlisted YouTube demo, live application and article links saved. A GitHub publication alone would not have been a hackathon submission. See [the prepared submission details](docs/SUBMISSION_READY.md) and [the requirement-by-requirement checklist](docs/RULES_AUDIT_2026-10-18.md).

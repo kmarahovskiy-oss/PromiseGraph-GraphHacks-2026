@@ -1,6 +1,6 @@
 # Graph Hacks 2026 — final entry copy
 
-**Status:** Public deliverables prepared and participant technical review confirmed on October 18, 2026. The WeMakeDevs entry form remains unconfirmed; this document is not a submission receipt.
+**Status:** Submitted on October 18, 2026 at approximately 20:54 Kyiv time, before the 21:29 Kyiv deadline. The authenticated WeMakeDevs portal displayed **SUBMITTED** for the solo entry **PromiseGraph — Before You Promise**. The saved entry contains the chosen track and all four links below. Portal receipt is not a judging decision or award.
 
 ## Project name
 PromiseGraph — Before You Promise
@@ -38,7 +38,8 @@ Cypher traverses those edges to find precise evidence, affected customer promise
 - **Working application:** https://promisegraph-graphhacks-2026.onrender.com/
 - **Product story:** https://promisegraph-graphhacks-2026.onrender.com/story
 - **Article:** https://promisegraph-graphhacks-2026.onrender.com/article
-- **Real FalkorDB narrated video:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4
+- **YouTube demo (unlisted; submitted video link):** https://www.youtube.com/watch?v=3_iHbNts5us
+- **Backup real FalkorDB narrated MP4:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/releases/download/graphhacks-demo-2026/PromiseGraph_Real_Demo_Narrated.mp4
 - **Graph and test results:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/verify.yml
 - **Video/real browser test:** https://github.com/kmarahovskiy-oss/PromiseGraph-GraphHacks-2026/actions/workflows/live-demo.yml
 
@@ -46,5 +47,5 @@ Cypher traverses those edges to find precise evidence, affected customer promise
 
 On October 18, the participant confirmed technical review of the project. The participant directed the project toward reducing manual reconciliation work, avoiding unsupported customer promises, and improving the user experience, test reliability, graph dependence, scenario replay and presentation. They reviewed the narrated demo voice and requested the improved Google TTS edition. Implementation used extensive ChatGPT assistance, which is disclosed. This is a statement of the participant's reported review and directions, not a claim that they personally wrote every line of source code.
 
-## Human final gate
-Confirm the form's final content, then submit using the registered WeMakeDevs account **before 18 October 2026, 21:29 Kyiv time**. This document is preparation, not an actual submission receipt.
+## Submission confirmation
+The participant authorised submission and confirmed technical review. After publication of the demo on YouTube, the final form was submitted and its **SUBMITTED** view was checked. The saved repository, YouTube demo, live deployment, article and **Agents That Act on Connected Data** track matched this package. The authenticated receipt is available at https://www.wemakedevs.org/hackathons/falkordb/submit for the submitting account; that URL is account-specific, not a public project detail page.
