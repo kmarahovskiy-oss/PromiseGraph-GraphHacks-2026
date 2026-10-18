@@ -1,0 +1,96 @@
+"""A truthful, graph-dependent local API with explicit reviewer gate."""
+from pathlib import Path
+import os, logging
+from threading import Lock
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
+from .domain import analyze
+from .store import GraphStore
+
+BASE=Path(__file__).resolve().parent.parent
+LOG=logging.getLogger('promisegraph')
+
+class MeasureRequest(BaseModel):
+    id: str=Field(min_length=1,max_length=100)
+    mattress: str=Field(default='30',max_length=30)
+    topper: str=Field(default='4',max_length=30)
+    unit: str=Field(default='cm',max_length=5)
+
+class DecisionRequest(MeasureRequest):
+    evidence_id: str=Field(min_length=1,max_length=100)
+    reason: str=Field(min_length=12,max_length=400)
+    fingerprint: str=Field(min_length=64,max_length=64)
+    confirmed: bool=False
+
+
+def create_app(initial_store=None):
+    app=FastAPI(title='PromiseGraph: Can we promise this?',version='2026.10.18')
+    app.state.store=initial_store
+    guard=Lock()
+    def db():
+        with guard:
+            if app.state.store is None:
+                try:
+                    candidate=GraphStore()
+                    candidate.seed(BASE/'data/demo.json')
+                    app.state.store=candidate
+                except Exception as exc:
+                    LOG.exception('Real FalkorDB failed to initialize')
+                    raise HTTPException(503,'Real FalkorDB unavailable. No substitute database is used.') from exc
+        return app.state.store
+    def result(r):
+        try:
+            return analyze(db().bundle(r.id),r.mattress,r.topper,r.unit)
+        except KeyError as exc: raise HTTPException(404,str(exc)) from exc
+        except ValueError as exc: raise HTTPException(422,str(exc)) from exc
+    @app.get('/api/health')
+    def health():
+        return {'status':'connected', 'graph':'FalkorDB','source':'real_graph', 'synthetic':True,**db().counts()}
+    @app.get('/api/variants')
+    def variants(): return db().contexts()
+    @app.post('/api/analyze')
+    def check(r:MeasureRequest):
+        value=result(r)
+        trace=[
+            {'tool':'graph.select_variant','status':'complete','detail':r.id},
+            {'tool':'graph.collect_source_witnesses','status':'complete','detail':f'{len(value["evidence"])} source witnesses'},
+            {'tool':'rule.validate_exact_units','status':'complete','detail':f'{value["required_cm"]} cm combined'},
+            {'tool':'graph.follow_DEPENDS_ON_edges','status':'complete','detail':f'{len(value["affected"])} connected promises'},
+        ]
+        if value['needs_source_review']:
+            trace.append({'tool':'agent.request_human_source_review','status':'paused','detail':value['reason']})
+        elif value['impact_count']:
+            trace.append({'tool':'agent.prepare_editorial_drafts','status':'drafts_prepared',
+                          'detail':f'{value["impact_count"]} documents require editorial approval; nothing published'})
+        else:
+            trace.append({'tool':'agent.skip_unnecessary_edits','status':'complete',
+                          'detail':'All linked claims supported by selected evidence'})
+        value['agent_trace']=trace
+        return value
+    @app.post('/api/decide')
+    def decide(r:DecisionRequest):
+        if not r.confirmed: raise HTTPException(422,'Explicit human confirmation is required')
+        if len(r.reason.strip())<12: raise HTTPException(422,'Please record an explanatory reason')
+        current=result(r)
+        if current['rejected_evidence']:raise HTTPException(422,'Invalid sources must be repaired first')
+        try:
+            decision=db().approve(r.id,r.evidence_id,r.reason.strip(),r.fingerprint)
+        except ValueError as exc:raise HTTPException(409,str(exc)) from exc
+        return {'decision_id':decision,'result':result(r),'saved_in':'FalkorDB'}
+    @app.get('/api/paths/{id}')
+    def paths(id:str): return {'id':id,'relationships':db().paths(id)}
+    @app.get('/api/audit/{id}')
+    def audit(id:str): return db().audit(id)
+    @app.post('/api/export')
+    def export(r:MeasureRequest):
+        value=result(r)
+        return {'format':'promisegraph-draft-v2','synthetic':True,'automatically_published':False,
+            'output':'review-only','result':value,'graph_paths':db().paths(r.id),'history':db().audit(r.id)}
+    app.mount('/static',StaticFiles(directory=BASE/'promisegraph/static'),name='static')
+    @app.get('/')
+    def index(): return FileResponse(BASE/'promisegraph/static/index.html')
+    return app
+
+app=create_app()

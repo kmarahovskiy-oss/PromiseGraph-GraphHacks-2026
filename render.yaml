@@ -1,0 +1,15 @@
+# OPTIONAL experimental deployment manifest: NOT TESTED or activated.
+# Deploy only after explicit owner approval. Render Free loses filesystem state
+# on restart/spin-down; do NOT claim durable cross-restart decision memory.
+services:
+  - type: web
+    name: promisegraph-graph-hacks-demo
+    runtime: python
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: FALKORDB_MODE
+        value: embedded
+    buildCommand: pip install -r requirements-embedded.txt
+    startCommand: python -m uvicorn promisegraph.app:app --host 0.0.0.0 --port $PORT --workers 1

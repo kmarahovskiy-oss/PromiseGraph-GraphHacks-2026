@@ -1,0 +1,135 @@
+{
+  "schema": "promisegraph-demo-v2",
+  "synthetic": true,
+  "variants": [
+    {
+      "id": "standard-r3",
+      "context": {
+        "model": "AstraRest 90",
+        "sku": "AR90-STD",
+        "revision": "R3",
+        "region": "EU",
+        "name": "AstraRest Standard • R3"
+      },
+      "evidence": [
+        {
+          "id": "e-standard-supplier",
+          "document_id": "doc:e-standard-supplier",
+          "title": "Supplier catalog, R3",
+          "text": "SYNTHETIC DOCUMENT — Supplier catalog, R3\nProduct specification\nMaximum total mattress-and-topper height: 35 cm.\nOther conditions are not covered.",
+          "uri": "synthetic://supplier/r3",
+          "value": "35",
+          "unit": "cm",
+          "normalized_cm": "35",
+          "quote": "Maximum total mattress-and-topper height: 35 cm.",
+          "start": 64,
+          "end": 112
+        },
+        {
+          "id": "e-standard-drawing",
+          "document_id": "doc:e-standard-drawing",
+          "title": "Engineering drawing, R3",
+          "text": "SYNTHETIC DOCUMENT — Engineering drawing, R3\nProduct specification\nMaximum total mattress-and-topper height: 12 in.\nOther conditions are not covered.",
+          "uri": "synthetic://drawing/r3",
+          "value": "12",
+          "unit": "in",
+          "normalized_cm": "30.48",
+          "quote": "Maximum total mattress-and-topper height: 12 in.",
+          "start": 67,
+          "end": 115
+        }
+      ],
+      "promises": [
+        {
+          "id": "p-store",
+          "document_id": "page:p-store",
+          "title": "Online store • product page",
+          "text": "A 30 cm mattress plus a 4 cm topper fits the AstraRest 90 Standard (R3).",
+          "required_cm": "34"
+        },
+        {
+          "id": "p-quote",
+          "document_id": "page:p-quote",
+          "title": "Sales quotation #Q-104",
+          "text": "Confirmed fit for 34 cm combined height on Standard R3.",
+          "required_cm": "34"
+        },
+        {
+          "id": "p-faq",
+          "document_id": "page:p-faq",
+          "title": "Support FAQ",
+          "text": "A 28 cm total stack is suitable for Standard R3.",
+          "required_cm": "28"
+        }
+      ]
+    },
+    {
+      "id": "deep-r3",
+      "context": {
+        "model": "AstraRest 90",
+        "sku": "AR90-DEEP",
+        "revision": "R3",
+        "region": "EU",
+        "name": "AstraRest Deep • R3"
+      },
+      "evidence": [
+        {
+          "id": "e-deep",
+          "document_id": "doc:e-deep",
+          "title": "Deep engineering spec, R3",
+          "text": "SYNTHETIC DOCUMENT — Deep engineering spec, R3\nProduct specification\nMaximum total mattress-and-topper height: 40 cm.\nOther conditions are not covered.",
+          "uri": "synthetic://drawing/deep",
+          "value": "40",
+          "unit": "cm",
+          "normalized_cm": "40",
+          "quote": "Maximum total mattress-and-topper height: 40 cm.",
+          "start": 69,
+          "end": 117
+        }
+      ],
+      "promises": [
+        {
+          "id": "p-deep",
+          "document_id": "page:p-deep",
+          "title": "Online store • Deep variant",
+          "text": "Deep R3 accommodates 38 cm combined height.",
+          "required_cm": "38"
+        }
+      ]
+    },
+    {
+      "id": "standard-r2",
+      "context": {
+        "model": "AstraRest 90",
+        "sku": "AR90-STD",
+        "revision": "R2",
+        "region": "EU",
+        "name": "AstraRest Standard • R2"
+      },
+      "evidence": [
+        {
+          "id": "e-standard-old",
+          "document_id": "doc:e-standard-old",
+          "title": "Archived spec, R2",
+          "text": "SYNTHETIC DOCUMENT — Archived spec, R2\nProduct specification\nMaximum total mattress-and-topper height: 36 cm.\nOther conditions are not covered.",
+          "uri": "synthetic://archive/r2",
+          "value": "36",
+          "unit": "cm",
+          "normalized_cm": "36",
+          "quote": "Maximum total mattress-and-topper height: 36 cm.",
+          "start": 61,
+          "end": 109
+        }
+      ],
+      "promises": [
+        {
+          "id": "p-old",
+          "document_id": "page:p-old",
+          "title": "Archived listing • R2",
+          "text": "Previous revision R2 supports 34 cm.",
+          "required_cm": "34"
+        }
+      ]
+    }
+  ]
+}
