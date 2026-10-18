@@ -82,6 +82,19 @@ async function exportDraft(){if(!report||!reportInputs){alert('Run an analysis b
  const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;
  a.download=selected.preview?'promisegraph-readonly-preview.json':'promisegraph-review-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),5000)
  }catch(e){alert(e.message)}}
-$('check').addEventListener('click',()=>{$('previewNote').textContent='';check()});$('reconsider').addEventListener('click',reconsider);$('scanPortfolio').addEventListener('click',scanPortfolio);$('replay').addEventListener('click',replay);$('preview').addEventListener('click',preview);$('approve').addEventListener('click',approve);$('paths').addEventListener('click',()=>detail('GRAPH PATHS','/api/paths/'+encodeURIComponent(payload().id)));$('history').addEventListener('click',()=>detail('REVIEW HISTORY','/api/audit/'+encodeURIComponent(payload().id)));$('export').addEventListener('click',exportDraft);
+async function copyCorrectionDrafts(){
+ if(!report||report.preview){$('details').textContent='A saved review is needed. Run the graph analysis and select an authoritative source first.';$('details').classList.remove('hidden');return}
+ if(JSON.stringify(payload())!==JSON.stringify(reportInputs)){$('details').textContent='Inputs changed. Run analysis again before copying.';$('details').classList.remove('hidden');return}
+ const drafts=(report.affected||[]).filter(x=>x.action==='REVIEW_DRAFT'&&x.suggestion);
+ if(!drafts.length){$('details').textContent='No verified correction drafts are ready. Nothing copied.';$('details').classList.remove('hidden');return}
+ const lines=[`PromiseGraph — editorial correction drafts (NOT published)`,`Product variant: ${report.context.sku}, ${report.context.revision}, ${report.context.region}`,`Approved evidence ID: ${report.authority_id}`,`Evidence fingerprint: ${report.fingerprint}`,`Affected claims: ${drafts.length}`,''];
+ drafts.forEach((d,i)=>{lines.push(`${i+1}. ${d.title} (${d.document_id})`,`Current: ${d.current}`,`Proposed: ${d.suggestion}`,'')});
+ lines.push('Review every edit before publishing. Synthetic demonstration data.');
+ const text=lines.join('\n');
+ try{if(!navigator.clipboard?.writeText)throw Error('Clipboard API unavailable');await navigator.clipboard.writeText(text);$('details').textContent=`Copied ${drafts.length} evidence-backed correction draft(s) to clipboard.`}
+ catch(_){const blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='promisegraph-correction-drafts.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);$('details').textContent=`Clipboard unavailable; downloaded ${drafts.length} draft(s) as a text file.`}
+ $('details').classList.remove('hidden');
+}
+$('check').addEventListener('click',()=>{$('previewNote').textContent='';check()});$('reconsider').addEventListener('click',reconsider);$('scanPortfolio').addEventListener('click',scanPortfolio);$('replay').addEventListener('click',replay);$('preview').addEventListener('click',preview);$('approve').addEventListener('click',approve);$('paths').addEventListener('click',()=>detail('GRAPH PATHS','/api/paths/'+encodeURIComponent(payload().id)));$('history').addEventListener('click',()=>detail('REVIEW HISTORY','/api/audit/'+encodeURIComponent(payload().id)));$('export').addEventListener('click',exportDraft);$('copyDrafts').addEventListener('click',copyCorrectionDrafts);
 $('variant').addEventListener('change',()=>{$('previewNote').textContent='';check()});$('mattress').addEventListener('change',check);$('topper').addEventListener('change',check);
 startup();

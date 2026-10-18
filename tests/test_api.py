@@ -107,3 +107,10 @@ def test_cannot_record_decision_on_tampered_customer_claim():
         'fingerprint':analysis['fingerprint'],'confirmed':True})
     assert response.status_code==422
     assert store.data['authority'] is None
+
+
+def test_copy_all_editorial_drafts_control_present():
+    response=TestClient(create_app(FauxStore())).get('/')
+    assert response.status_code==200
+    assert 'id="copyDrafts"' in response.text
+    assert 'Copy all correction drafts' in response.text
