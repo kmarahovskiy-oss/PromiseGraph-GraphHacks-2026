@@ -1,6 +1,7 @@
 'use strict';
 const $=id=>document.getElementById(id);
 let report=null;
+let analysisSequence=0;
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const payload=()=>({id:$('variant').value,mattress:$('mattress').value,topper:$('topper').value,unit:'cm'});
 async function api(path,opts={}){
@@ -15,11 +16,11 @@ async function startup(){try{
  if(variants.some(v=>v.id==='standard-r3'))$('variant').value='standard-r3';
  await check();
  }catch(e){$('connection').textContent='FalkorDB unavailable';$('headline').textContent='Graph connection required';$('explanation').textContent=e.message;$('check').disabled=true;status(null,'Database offline','fail');}}
-async function check(){try{$('check').disabled=true;status(null,'Analyzing…','neutral');report=await api('/api/analyze',{method:'POST',body:JSON.stringify(payload())});render(report)}catch(e){$('explanation').textContent=e.message;status(null,'Error','fail')}finally{$('check').disabled=false}}
+async function check(){const sequence=++analysisSequence;try{$('check').disabled=true;status(null,'Analyzing…','neutral');const next=await api('/api/analyze',{method:'POST',body:JSON.stringify(payload())});if(sequence===analysisSequence){report=next;render(next)}}catch(e){if(sequence===analysisSequence){report=null;$('explanation').textContent=e.message;$('claims').textContent='No current analysis';$('sources').textContent='No current evidence';status(null,'Error','fail')}}finally{if(sequence===analysisSequence)$('check').disabled=false}}
 function render(r){let state=r.state;
  status(null,({REVIEW_REQUIRED:'SOURCE CONFLICT',BLOCKED:'STOP · SOURCE INVALID',PASS:'DOCUMENTED FIT',FAIL:'UNSUPPORTED CLAIM'})[state],({REVIEW_REQUIRED:'review',BLOCKED:'fail',PASS:'pass',FAIL:'fail'})[state]);
  $('headline').textContent=({REVIEW_REQUIRED:'Two sources. Two answers. One decision to make.',BLOCKED:'Evidence cannot be trusted yet.',PASS:'The selected documentation supports this fit.',FAIL:'This promise would mislead the buyer.'})[state];
- $('explanation').textContent=r.reason;$('required').textContent=r.required_cm+' cm';$('limit').textContent=r.limit_cm?r.limit_cm+' cm':'Unresolved';$('impact').textContent=r.limit_cm?String(r.impact_count):'Pending';
+ $('explanation').textContent=r.reason+(r.replay?' READ-ONLY REPLAY: no earlier decision is erased or changed.':'');$('required').textContent=r.required_cm+' cm';$('limit').textContent=r.limit_cm?r.limit_cm+' cm':'Unresolved';$('impact').textContent=r.limit_cm?String(r.impact_count):'Pending';
  $('scenarios').classList.toggle('hidden',!(r.alternatives||[]).length);
  $('scenarioCards').innerHTML=(r.alternatives||[]).map(a=>`<div class="scenario"><span class="tag">WHAT IF · ${esc(a.requested_result)}</span><strong>${esc(a.title)}</strong><p>Allowed stack: <b>${esc(a.limit_cm)} cm</b></p><p><b>${esc(a.affected_count)}</b> dependent claims would need correction</p><div class="subtitle">${esc(a.affected_titles.join(' · ')||'No linked claims need correction')}</div><small>Not an approved decision</small></div>`).join('');
  $('sources').innerHTML=r.evidence.map(s=>`<div class="source"><span class="tag">${esc(s.normalized_cm)} CM · ${esc(s.unit)} ORIGINAL</span><strong>${esc(s.title)}</strong><div class="subtitle">${esc(s.id)} · ${esc(s.region)} / ${esc(s.revision)}</div><blockquote>${esc(s.quote)}</blockquote></div>`).join('')||'No valid sources';
@@ -41,12 +42,13 @@ async function scanPortfolio(){
  finally{button.disabled=false}
 }
 async function replay(){
+ ++analysisSequence;$('check').disabled=false;
  try{$('replay').disabled=true;
   report=await api('/api/replay-conflict',{method:'POST',body:JSON.stringify(payload())});
   render(report);$('previewNote').textContent=report.preview_note;
  }catch(e){$('previewNote').textContent=e.message}finally{$('replay').disabled=false}
 }
-async function preview(){try{
+async function preview(){++analysisSequence;$('check').disabled=false;try{
  $('preview').disabled=true;const data={...payload(),title:$('newtitle').value,text:$('newtext').value};
  report=await api('/api/preview-source',{method:'POST',body:JSON.stringify(data)});
  render(report);$('previewNote').textContent=report.preview_note;
